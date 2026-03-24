@@ -28,12 +28,6 @@ const Navbar = () => {
             Proyecto
           </a>
           <a
-            href="#participate"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Participa
-          </a>
-          <a
             href="https://www.youtube.com/@salidadelacaverna"
             target="_blank"
             rel="noopener noreferrer"
