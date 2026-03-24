@@ -9,12 +9,12 @@ const HeroSection = () => {
       <div className="absolute inset-0">
         <img
           src={heroBg}
-          alt="Caverna con luz"
+          alt="Caverna con luz — metáfora del pensamiento crítico"
           className="w-full h-full object-cover"
           width={1920}
           height={1080}
         />
-        <div className="absolute inset-0 bg-background/60" />
+        <div className="absolute inset-0 bg-background/65" />
         <div className="absolute inset-0 light-beam" />
       </div>
 
@@ -35,18 +35,19 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-gradient leading-tight mb-6"
         >
-          ¿Te atreves
+          Lo que nadie
           <br />
-          a pensar?
+          te cuenta
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-muted-foreground text-lg md:text-xl max-w-xl mx-auto mb-10"
+          className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10"
         >
-          Preguntas incómodas. Respuestas reales. Sin guion. Grabado en un instituto.
+          Conversaciones reales con profesionales, periodistas y profesores.
+          Sin guion. Sin filtro. Grabado en un instituto.
         </motion.p>
 
         <motion.div
@@ -56,10 +57,12 @@ const HeroSection = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <Button variant="hero" size="lg" className="text-base px-8 py-6" asChild>
-            <a href="#videos">Ver vídeos</a>
+            <a href="https://www.youtube.com/@salidadelacaverna" target="_blank" rel="noopener noreferrer">
+              Ver episodios
+            </a>
           </Button>
           <Button variant="heroOutline" size="lg" className="text-base px-8 py-6" asChild>
-            <a href="#about">Sobre el proyecto</a>
+            <a href="#about">Descubre el proyecto</a>
           </Button>
         </motion.div>
       </div>
