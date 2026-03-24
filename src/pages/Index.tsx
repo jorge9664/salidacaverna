@@ -4,6 +4,7 @@ import "@fontsource/space-grotesk/700.css";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
+import SocialSection from "@/components/SocialSection";
 import FooterSection from "@/components/FooterSection";
 
 const Index = () => {
