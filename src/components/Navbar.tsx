@@ -27,6 +27,9 @@ const Navbar = () => {
           <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
             Proyecto
           </a>
+          <a href="#social" className="text-muted-foreground hover:text-foreground transition-colors">
+            Redes
+          </a>
           <a
             href="https://www.youtube.com/@salidadelacaverna"
             target="_blank"
