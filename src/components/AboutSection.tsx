@@ -4,18 +4,21 @@ import { Eye, MessageCircleQuestion, Lightbulb } from "lucide-react";
 const features = [
   {
     icon: MessageCircleQuestion,
-    title: "Preguntas sin filtro",
-    description: "Educación, libertad, verdad, sociedad… Los temas que importan, sin edulcorar.",
+    title: "Conversaciones sin guion",
+    description:
+      "Invitamos a profesionales, periodistas y profesores a sentarse frente a la cámara. Sin preguntas pactadas, sin respuestas ensayadas.",
   },
   {
     icon: Eye,
-    title: "Respuestas reales",
-    description: "Profesores, alumnos e invitados responden desde su experiencia. Sin guion, sin trampa.",
+    title: "Temas que importan",
+    description:
+      "Educación, libertad, verdad, redes sociales, salud mental… Los temas que afectan a tu día a día, tratados con honestidad.",
   },
   {
     icon: Lightbulb,
-    title: "Pensamiento crítico",
-    description: "Inspirado en el mito de la caverna de Platón: cuestionar lo que damos por hecho.",
+    title: "Desde un instituto",
+    description:
+      "Grabado en un centro educativo real. Un espacio donde las ideas se cruzan con la realidad de quienes las viven cada día.",
   },
 ];
 
@@ -34,10 +37,21 @@ const AboutSection = () => {
           <h2 className="text-3xl md:text-5xl font-bold text-gradient mb-4">
             ¿Qué es La salida de la caverna?
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Un proyecto audiovisual grabado en un instituto donde nadie se esconde.
-            Preguntas incómodas, respuestas sinceras, conversaciones que importan.
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
+            Un programa de tertulia donde personas reales hablan de lo que realmente
+            importa. Nada de discursos vacíos ni debates forzados: aquí se viene a
+            pensar en voz alta, a discrepar con respeto y a decir lo que muchos
+            piensan pero pocos dicen.
           </p>
+          <motion.blockquote
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="text-primary text-xl md:text-2xl font-bold italic max-w-xl mx-auto border-l-4 border-primary/40 pl-6 text-left"
+          >
+            "Salir de la caverna no es encontrar respuestas, es atreverse a hacer las preguntas."
+          </motion.blockquote>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">

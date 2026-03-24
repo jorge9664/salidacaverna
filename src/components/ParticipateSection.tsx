@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const ParticipateSection = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section id="participate" className="py-24 relative overflow-hidden">
       <div className="container px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -17,16 +17,25 @@ const ParticipateSection = () => {
           </div>
 
           <h2 className="text-3xl md:text-5xl font-bold text-gradient mb-6">
-            ¿Te atreves a salir de la caverna?
+            Tu voz también importa
           </h2>
-          <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
-            Si eres alumno, profesor o simplemente alguien con algo que decir,
-            queremos escucharte. Participa en el próximo episodio.
+          <p className="text-muted-foreground text-lg mb-4 leading-relaxed">
+            Si tienes algo que decir y no te da miedo decirlo, queremos escucharte.
+            Buscamos profesionales, docentes, estudiantes y cualquier persona con una
+            perspectiva real sobre los temas que mueven el mundo.
+          </p>
+          <p className="text-foreground font-semibold text-xl mb-10">
+            No buscamos respuestas perfectas. Buscamos respuestas honestas.
           </p>
 
-          <Button variant="hero" size="lg" className="text-base px-10 py-6" asChild>
-            <a href="mailto:contacto@lasalidadelacaverna.es">Quiero participar</a>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button variant="hero" size="lg" className="text-base px-10 py-6" asChild>
+              <a href="mailto:contacto@lasalidadelacaverna.es">Quiero participar</a>
+            </Button>
+            <Button variant="heroOutline" size="lg" className="text-base px-10 py-6" asChild>
+              <a href="mailto:contacto@lasalidadelacaverna.es">Proponer un tema</a>
+            </Button>
+          </div>
         </motion.div>
       </div>
 
