@@ -27,20 +27,19 @@ const Navbar = () => {
           <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
             Proyecto
           </a>
-          <a href="#guests" className="text-muted-foreground hover:text-foreground transition-colors">
-            Invitados
-          </a>
-          <a href="#episodes" className="text-muted-foreground hover:text-foreground transition-colors">
-            Episodios
-          </a>
-          <a href="#clips" className="text-muted-foreground hover:text-foreground transition-colors">
-            Clips
-          </a>
           <a
             href="#participate"
-            className="text-primary font-semibold hover:text-primary/80 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Participa
+          </a>
+          <a
+            href="https://www.youtube.com/@salidadelacaverna"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary font-semibold hover:text-primary/80 transition-colors"
+          >
+            YouTube
           </a>
         </div>
       </div>
