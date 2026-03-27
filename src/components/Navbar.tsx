@@ -40,7 +40,7 @@ const Navbar = () => {
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-6 text-sm">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
+            <a key={link.href} href={link.href} onClick={(e) => handleSmoothScroll(e, link.href)} className="text-muted-foreground hover:text-foreground transition-colors">
               {link.label}
             </a>
           ))}
@@ -80,7 +80,7 @@ const Navbar = () => {
                   key={link.href}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => { handleSmoothScroll(e, link.href); setMenuOpen(false); }}
                 >
                   {link.label}
                 </a>
