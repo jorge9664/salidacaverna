@@ -40,7 +40,7 @@ const Navbar = () => {
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-6 text-sm">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} onClick={(e) => handleSmoothScroll(e, link.href)} className="relative text-muted-foreground hover:text-foreground transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
+            <a key={link.href} href={link.href} onClick={(e) => handleSmoothScroll(e, link.href)} className="relative text-muted-foreground hover:text-foreground transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
               {link.label}
             </a>
           ))}
@@ -48,7 +48,7 @@ const Navbar = () => {
             href="https://www.youtube.com/@salidadelacaverna"
             target="_blank"
             rel="noopener noreferrer"
-            className="relative text-primary font-semibold hover:text-primary/80 transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+            className="relative text-primary font-semibold hover:text-primary/80 transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
           >
             YouTube
           </a>
