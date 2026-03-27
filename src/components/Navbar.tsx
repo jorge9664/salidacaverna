@@ -7,6 +7,12 @@ const navLinks = [
   { href: "#social", label: "Redes" },
 ];
 
+const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  e.preventDefault();
+  const target = document.querySelector(href);
+  target?.scrollIntoView({ behavior: "smooth" });
+};
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
