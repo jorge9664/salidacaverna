@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -22,8 +22,19 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+const COOLDOWN_MS = 30_000; // 30s entre envíos
+const MIN_FILL_TIME_MS = 3_000; // bots rellenan en <3s
+
 const ContactSection = () => {
   const [submitting, setSubmitting] = useState(false);
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const mountedAtRef = useRef<number>(Date.now());
+  const lastSubmitRef = useRef<number>(0);
+
+  useEffect(() => {
+    mountedAtRef.current = Date.now();
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -35,10 +46,30 @@ const ContactSection = () => {
   });
 
   const onSubmit = async (values: ContactFormValues) => {
-    if (GOOGLE_SCRIPT_URL.includes("REEMPLAZA_CON_TU_URL")) {
+    // 1. Honeypot: campo oculto que solo los bots rellenan
+    if (honeypotRef.current?.value) {
+      toast({ title: "¡Mensaje enviado!", description: "Gracias por escribirnos." });
+      reset();
+      return;
+    }
+
+    // 2. Tiempo mínimo de relleno
+    if (Date.now() - mountedAtRef.current < MIN_FILL_TIME_MS) {
       toast({
-        title: "Configura Google Sheets",
-        description: "Pega la URL de tu Apps Script en ContactSection.tsx",
+        title: "Espera un momento",
+        description: "Tómate unos segundos para revisar el formulario.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 3. Cooldown entre envíos
+    const sinceLast = Date.now() - lastSubmitRef.current;
+    if (lastSubmitRef.current && sinceLast < COOLDOWN_MS) {
+      const wait = Math.ceil((COOLDOWN_MS - sinceLast) / 1000);
+      toast({
+        title: "Demasiados envíos",
+        description: `Espera ${wait}s antes de enviar otro mensaje.`,
         variant: "destructive",
       });
       return;
@@ -54,6 +85,7 @@ const ContactSection = () => {
         body: JSON.stringify(values),
       });
 
+      lastSubmitRef.current = Date.now();
       toast({
         title: "¡Mensaje enviado!",
         description: "Gracias por escribirnos. Te responderemos pronto.",
@@ -96,6 +128,16 @@ const ContactSection = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-5 bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 md:p-8"
           >
+            {/* Honeypot anti-spam: oculto para humanos, visible para bots */}
+            <input
+              ref={honeypotRef}
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="absolute -left-[9999px] w-px h-px opacity-0"
+            />
             <div className="grid sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre</Label>
