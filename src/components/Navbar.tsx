@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 const navLinks = [
   { href: "#about", label: "Proyecto" },
   { href: "#social", label: "Redes" },
+  { href: "#contact", label: "Contacto" },
 ];
 
 const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
