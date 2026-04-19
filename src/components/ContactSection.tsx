@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 
 // 👉 Pega aquí la URL del Apps Script desplegado como Web App
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/REEMPLAZA_CON_TU_URL/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6VKm4Wux7NGK-lPL_X7ItaNvyjej3nm5QNF36bODdKB9WnpxOmLYKUjr3i_T3W03E/exec";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio").max(100, "Máximo 100 caracteres"),
