@@ -85,6 +85,7 @@ const ContactSection = () => {
         body: JSON.stringify(values),
       });
 
+      lastSubmitRef.current = Date.now();
       toast({
         title: "¡Mensaje enviado!",
         description: "Gracias por escribirnos. Te responderemos pronto.",
@@ -127,6 +128,16 @@ const ContactSection = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-5 bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 md:p-8"
           >
+            {/* Honeypot anti-spam: oculto para humanos, visible para bots */}
+            <input
+              ref={honeypotRef}
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="absolute -left-[9999px] w-px h-px opacity-0"
+            />
             <div className="grid sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre</Label>
