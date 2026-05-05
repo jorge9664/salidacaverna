@@ -78,7 +78,7 @@ const SocialSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {platforms.map((platform, index) => (
             <motion.a
               key={platform.name}
@@ -89,7 +89,7 @@ const SocialSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.12 }}
-              className="group block bg-card border border-border rounded-xl p-8 hover-lift relative overflow-hidden"
+              className="group block bg-card border border-border rounded-xl p-8 hover-lift relative overflow-hidden w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
             >
               {/* Top glow */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
