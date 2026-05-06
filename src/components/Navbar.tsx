@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const navLinks = [
   { href: "#about", label: "Proyecto" },
@@ -34,8 +35,9 @@ const Navbar = () => {
       }`}
     >
       <div className="container px-4 py-4 flex items-center justify-between">
-        <a href="#" className="text-foreground font-bold text-lg tracking-tight">
-          <span className="text-primary">La salida</span> de la caverna
+        <a href="#" className="flex items-center gap-3 text-foreground font-bold text-lg tracking-tight">
+          <img src={logo} alt="La salida de la caverna" className="w-10 h-10 object-contain" />
+          <span><span className="text-primary">La salida</span> de la caverna</span>
         </a>
 
         {/* Desktop */}
