@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logo from "@/assets/logo.png";
 
 const socials = [
   {
@@ -85,7 +86,8 @@ const FooterSection = () => {
           </motion.div>
 
           {/* Brand */}
-          <div className="text-center">
+          <div className="flex flex-col items-center text-center">
+            <img src={logo} alt="La salida de la caverna" className="w-16 h-16 object-contain mb-3" />
             <p className="text-foreground font-bold text-lg">La salida de la caverna</p>
             <p className="text-muted-foreground text-sm mt-1">
               Conversaciones reales desde el aula.
