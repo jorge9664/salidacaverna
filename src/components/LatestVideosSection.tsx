@@ -1,28 +1,70 @@
 import { motion } from "framer-motion";
-import { Play, Youtube } from "lucide-react";
+import { Play, Youtube, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const videos = [
+type Video = {
+  id: string;
+  title: string;
+  episode: string;
+  publishedAt: string;
+  thumbnail: string;
+};
+
+const fallbackVideos: Video[] = [
   {
     id: "Azeme64Y0aM",
     title: "La identidad de género | Salida de la Caverna #2",
     episode: "#2",
-    date: "11 May 2026",
+    publishedAt: "2026-05-11T09:00:06Z",
+    thumbnail: "https://i.ytimg.com/vi/Azeme64Y0aM/hqdefault.jpg",
   },
   {
     id: "bjjNbE4WxWE",
     title: "El bien: ¿objetivo o subjetivo? | Salida de la Caverna #1",
     episode: "#1",
-    date: "3 May 2026",
+    publishedAt: "2026-05-03T20:00:06Z",
+    thumbnail: "https://i.ytimg.com/vi/bjjNbE4WxWE/hqdefault.jpg",
   },
   {
     id: "gRJ6qM9MNoU",
     title: "Seguridad, privacidad y control | Salida de la Caverna #0",
     episode: "#0",
-    date: "26 Abr 2026",
+    publishedAt: "2026-04-26T20:00:06Z",
+    thumbnail: "https://i.ytimg.com/vi/gRJ6qM9MNoU/hqdefault.jpg",
   },
 ];
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
 const LatestVideosSection = () => {
+  const [videos, setVideos] = useState<Video[]>(fallbackVideos);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("youtube-latest");
+        if (!cancelled && !error && data?.videos?.length) {
+          setVideos(data.videos as Video[]);
+        }
+      } catch (e) {
+        console.error("Failed to load latest videos:", e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section id="videos" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 light-beam opacity-20 pointer-events-none" />
@@ -53,6 +95,12 @@ const LatestVideosSection = () => {
           </a>
         </motion.div>
 
+        {loading && (
+          <div className="flex justify-center mb-6 text-muted-foreground">
+            <Loader2 className="w-5 h-5 animate-spin" />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video, index) => (
             <motion.a
@@ -68,7 +116,7 @@ const LatestVideosSection = () => {
             >
               <div className="relative aspect-video bg-secondary rounded-xl overflow-hidden mb-3 border border-border group-hover:border-primary/40 transition-all duration-300">
                 <img
-                  src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
+                  src={video.thumbnail}
                   alt={video.title}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -83,15 +131,17 @@ const LatestVideosSection = () => {
                 </div>
 
                 {/* Episode badge */}
-                <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
-                  Episodio {video.episode}
-                </span>
+                {video.episode && (
+                  <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
+                    Episodio {video.episode}
+                  </span>
+                )}
               </div>
 
               <h3 className="text-foreground font-semibold text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
                 {video.title}
               </h3>
-              <div className="text-muted-foreground text-xs">{video.date}</div>
+              <div className="text-muted-foreground text-xs">{formatDate(video.publishedAt)}</div>
             </motion.a>
           ))}
         </div>
