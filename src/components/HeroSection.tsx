@@ -56,8 +56,19 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
-          <Button variant="hero" size="lg" className="text-base px-8 py-6" asChild>
-            <a href="https://www.youtube.com/@salidadelacaverna" target="_blank" rel="noopener noreferrer">
+          <Button
+            variant="hero"
+            size="lg"
+            className="text-base px-8 py-6"
+            asChild
+          >
+            <a
+              href="#videos"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#videos")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
               Ver episodios
             </a>
           </Button>
