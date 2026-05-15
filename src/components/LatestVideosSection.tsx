@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Play, Youtube, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLang } from "@/i18n/LanguageContext";
 
 type Video = {
   id: string;
@@ -35,14 +36,14 @@ const fallbackVideos: Video[] = [
   },
 ];
 
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("es-ES", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
 const LatestVideosSection = () => {
+  const { t } = useLang();
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(t.videos.dateLocale, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   const [videos, setVideos] = useState<Video[]>(fallbackVideos);
   const [loading, setLoading] = useState(true);
 
@@ -79,10 +80,10 @@ const LatestVideosSection = () => {
           <div>
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-bold px-4 py-1.5 rounded-full mb-4">
               <Youtube className="w-4 h-4" />
-              Últimos vídeos
+              {t.videos.badge}
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-gradient">
-              Lo nuevo en el canal
+              {t.videos.title}
             </h2>
           </div>
           <a
@@ -91,7 +92,7 @@ const LatestVideosSection = () => {
             rel="noopener noreferrer"
             className="text-primary font-semibold text-sm hover:gap-2 inline-flex items-center gap-1 transition-all"
           >
-            Ver todo en YouTube →
+            {t.videos.seeAll}
           </a>
         </motion.div>
 
@@ -133,7 +134,7 @@ const LatestVideosSection = () => {
                 {/* Episode badge */}
                 {video.episode && (
                   <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
-                    Episodio {video.episode}
+                    {t.videos.episodeLabel} {video.episode}
                   </span>
                 )}
               </div>
