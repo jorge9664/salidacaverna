@@ -217,6 +217,6 @@ export const translations = {
       rights: "All rights reserved.",
     },
   },
-} as const;
+};
 
 export type Translation = typeof translations.es;
