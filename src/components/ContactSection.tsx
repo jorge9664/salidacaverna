@@ -9,23 +9,29 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useLang } from "@/i18n/LanguageContext";
 
 // 👉 Pega aquí la URL del Apps Script desplegado como Web App
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6VKm4Wux7NGK-lPL_X7ItaNvyjej3nm5QNF36bODdKB9WnpxOmLYKUjr3i_T3W03E/exec";
 
-const contactSchema = z.object({
-  name: z.string().trim().min(1, "El nombre es obligatorio").max(100, "Máximo 100 caracteres"),
-  email: z.string().trim().email("Email no válido").max(255, "Máximo 255 caracteres"),
-  subject: z.string().trim().min(1, "El asunto es obligatorio").max(150, "Máximo 150 caracteres"),
-  message: z.string().trim().min(1, "El mensaje es obligatorio").max(1000, "Máximo 1000 caracteres"),
-});
-
-type ContactFormValues = z.infer<typeof contactSchema>;
+type ContactFormValues = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+};
 
 const COOLDOWN_MS = 30_000; // 30s entre envíos
 const MIN_FILL_TIME_MS = 3_000; // bots rellenan en <3s
 
 const ContactSection = () => {
+  const { t } = useLang();
+  const contactSchema = z.object({
+    name: z.string().trim().min(1, t.contact.errors.nameReq).max(100, t.contact.errors.nameMax),
+    email: z.string().trim().email(t.contact.errors.emailInvalid).max(255, t.contact.errors.emailMax),
+    subject: z.string().trim().min(1, t.contact.errors.subjectReq).max(150, t.contact.errors.subjectMax),
+    message: z.string().trim().min(1, t.contact.errors.messageReq).max(1000, t.contact.errors.messageMax),
+  });
   const [submitting, setSubmitting] = useState(false);
   const honeypotRef = useRef<HTMLInputElement>(null);
   const mountedAtRef = useRef<number>(Date.now());
@@ -48,7 +54,7 @@ const ContactSection = () => {
   const onSubmit = async (values: ContactFormValues) => {
     // 1. Honeypot: campo oculto que solo los bots rellenan
     if (honeypotRef.current?.value) {
-      toast({ title: "¡Mensaje enviado!", description: "Gracias por escribirnos." });
+      toast({ title: t.contact.toast.sentTitle, description: t.contact.toast.sentDesc });
       reset();
       return;
     }
@@ -56,8 +62,8 @@ const ContactSection = () => {
     // 2. Tiempo mínimo de relleno
     if (Date.now() - mountedAtRef.current < MIN_FILL_TIME_MS) {
       toast({
-        title: "Espera un momento",
-        description: "Tómate unos segundos para revisar el formulario.",
+        title: t.contact.toast.waitTitle,
+        description: t.contact.toast.waitDesc,
         variant: "destructive",
       });
       return;
@@ -68,8 +74,8 @@ const ContactSection = () => {
     if (lastSubmitRef.current && sinceLast < COOLDOWN_MS) {
       const wait = Math.ceil((COOLDOWN_MS - sinceLast) / 1000);
       toast({
-        title: "Demasiados envíos",
-        description: `Espera ${wait}s antes de enviar otro mensaje.`,
+        title: t.contact.toast.cooldownTitle,
+        description: t.contact.toast.cooldownDesc(wait),
         variant: "destructive",
       });
       return;
@@ -87,14 +93,14 @@ const ContactSection = () => {
 
       lastSubmitRef.current = Date.now();
       toast({
-        title: "¡Mensaje enviado!",
-        description: "Gracias por escribirnos. Te responderemos pronto.",
+        title: t.contact.toast.sentTitle,
+        description: t.contact.toast.sentDesc,
       });
       reset();
     } catch (error) {
       toast({
-        title: "Error al enviar",
-        description: "Inténtalo de nuevo en unos minutos.",
+        title: t.contact.toast.errorTitle,
+        description: t.contact.toast.errorDesc,
         variant: "destructive",
       });
     } finally {
@@ -117,10 +123,10 @@ const ContactSection = () => {
               <Mail className="w-8 h-8 text-primary" />
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-gradient mb-4">
-              Contacto
+              {t.contact.title}
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              ¿Tienes una idea, propuesta o quieres participar? Escríbenos.
+              {t.contact.subtitle}
             </p>
           </div>
 
@@ -140,15 +146,15 @@ const ContactSection = () => {
             />
             <div className="grid sm:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label htmlFor="name">Nombre</Label>
-                <Input id="name" placeholder="Tu nombre" {...register("name")} />
+                <Label htmlFor="name">{t.contact.name}</Label>
+                <Input id="name" placeholder={t.contact.namePh} {...register("name")} />
                 {errors.name && (
                   <p className="text-destructive text-sm">{errors.name.message}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="tu@email.com" {...register("email")} />
+                <Label htmlFor="email">{t.contact.email}</Label>
+                <Input id="email" type="email" placeholder={t.contact.emailPh} {...register("email")} />
                 {errors.email && (
                   <p className="text-destructive text-sm">{errors.email.message}</p>
                 )}
@@ -156,18 +162,18 @@ const ContactSection = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subject">Asunto</Label>
-              <Input id="subject" placeholder="¿Sobre qué nos escribes?" {...register("subject")} />
+              <Label htmlFor="subject">{t.contact.subject}</Label>
+              <Input id="subject" placeholder={t.contact.subjectPh} {...register("subject")} />
               {errors.subject && (
                 <p className="text-destructive text-sm">{errors.subject.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message">Mensaje</Label>
+              <Label htmlFor="message">{t.contact.message}</Label>
               <Textarea
                 id="message"
-                placeholder="Cuéntanos..."
+                placeholder={t.contact.messagePh}
                 rows={5}
                 {...register("message")}
               />
@@ -186,10 +192,10 @@ const ContactSection = () => {
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Enviando...
+                  {t.contact.sending}
                 </>
               ) : (
-                "Enviar mensaje"
+                t.contact.send
               )}
             </Button>
           </form>

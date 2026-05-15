@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
+import { useLang } from "@/i18n/LanguageContext";
 
 const socials = [
   {
@@ -50,6 +51,7 @@ const socials = [
 ];
 
 const FooterSection = () => {
+  const { t } = useLang();
   return (
     <footer className="py-16 border-t border-border">
       <div className="container px-4">
@@ -60,7 +62,7 @@ const FooterSection = () => {
             viewport={{ once: true }}
             className="text-muted-foreground text-lg text-center max-w-md"
           >
-            Síguenos para no perderte ninguna conversación.
+            {t.footer.tagline}
           </motion.p>
 
           {/* Social links */}
@@ -88,14 +90,14 @@ const FooterSection = () => {
           {/* Brand */}
           <div className="flex flex-col items-center text-center">
             <img src={logo} alt="La salida de la caverna" className="w-16 h-16 object-contain mb-3" />
-            <p className="text-foreground font-bold text-lg">La salida de la caverna</p>
+            <p className="text-foreground font-bold text-lg">{t.footer.brand}</p>
             <p className="text-muted-foreground text-sm mt-1">
-              Conversaciones reales desde el aula.
+              {t.footer.brandSub}
             </p>
           </div>
 
           <p className="text-muted-foreground/50 text-xs">
-            © {new Date().getFullYear()} La salida de la caverna. Todos los derechos reservados.
+            © {new Date().getFullYear()} {t.footer.brand}. {t.footer.rights}
           </p>
         </div>
       </div>

@@ -1,15 +1,17 @@
 import { motion } from "framer-motion";
 import heroBg from "@/assets/hero-cave.jpg";
 import { Button } from "@/components/ui/button";
+import { useLang } from "@/i18n/LanguageContext";
 
 const HeroSection = () => {
+  const { t } = useLang();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         <img
           src={heroBg}
-          alt="Caverna con luz — metáfora del pensamiento crítico"
+          alt={t.hero.heroAlt}
           className="w-full h-full object-cover"
           width={1920}
           height={1080}
@@ -26,7 +28,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-6"
         >
-          La salida de la caverna
+          {t.hero.kicker}
         </motion.p>
 
         <motion.h1
@@ -35,9 +37,9 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-gradient leading-tight mb-6"
         >
-          Lo que nadie
+          {t.hero.titleLine1}
           <br />
-          te cuenta
+          {t.hero.titleLine2}
         </motion.h1>
 
         <motion.p
@@ -46,8 +48,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10"
         >
-          Conversaciones reales con profesionales, periodistas y profesores.
-          Sin guion. Sin filtro. Grabado en un instituto.
+          {t.hero.subtitle}
         </motion.p>
 
         <motion.div
@@ -69,11 +70,11 @@ const HeroSection = () => {
                 document.querySelector("#videos")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Ver episodios
+              {t.hero.ctaPrimary}
             </a>
           </Button>
           <Button variant="heroOutline" size="lg" className="text-base px-8 py-6" asChild>
-            <a href="#about">Descubre el proyecto</a>
+            <a href="#about">{t.hero.ctaSecondary}</a>
           </Button>
         </motion.div>
       </div>

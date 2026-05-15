@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
-
-const navLinks = [
-  { href: "#about", label: "Proyecto" },
-  { href: "#social", label: "Redes" },
-  { href: "#contact", label: "Contacto" },
-];
+import { Menu, X, Globe } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { useLang } from "@/i18n/LanguageContext";
 
 const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
@@ -15,6 +11,9 @@ const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string
 };
 
 const Navbar = () => {
+  const { t, lang } = useLang();
+  const location = useLocation();
+  const otherPath = lang === "es" ? "/en" : "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -35,12 +34,12 @@ const Navbar = () => {
     >
       <div className="container px-4 py-4 flex items-center justify-between">
         <a href="#" className="text-foreground font-bold text-lg tracking-tight">
-          <span className="text-primary">La salida</span> de la caverna
+          <span className="text-primary">{t.nav.brandPrefix}</span>{t.nav.brandSuffix}
         </a>
 
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-6 text-sm">
-          {navLinks.map((link) => (
+          {t.nav.links.map((link) => (
             <a key={link.href} href={link.href} onClick={(e) => handleSmoothScroll(e, link.href)} className="relative text-muted-foreground hover:text-foreground transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-1 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left after:rounded-full">
               {link.label}
             </a>
@@ -51,18 +50,36 @@ const Navbar = () => {
             rel="noopener noreferrer"
             className="relative text-primary font-semibold hover:text-primary/80 transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-1 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left after:rounded-full"
           >
-            YouTube
+            {t.nav.youtube}
           </a>
+          <Link
+            to={otherPath}
+            aria-label={t.nav.langSwitchAria}
+            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors border border-border hover:border-primary/40 rounded-full px-3 py-1 text-xs font-semibold"
+          >
+            <Globe size={14} />
+            {t.nav.langSwitch}
+          </Link>
         </div>
 
         {/* Mobile toggle */}
-        <button
-          className="sm:hidden text-foreground p-1"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="sm:hidden flex items-center gap-3">
+          <Link
+            to={otherPath}
+            aria-label={t.nav.langSwitchAria}
+            className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary border border-border rounded-full px-2.5 py-1 text-xs font-semibold"
+          >
+            <Globe size={12} />
+            {t.nav.langSwitch}
+          </Link>
+          <button
+            className="text-foreground p-1"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -76,7 +93,7 @@ const Navbar = () => {
             className="sm:hidden overflow-hidden bg-background/95 backdrop-blur-md border-b border-border"
           >
             <div className="container px-4 py-4 flex flex-col gap-4 text-sm">
-              {navLinks.map((link) => (
+              {t.nav.links.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
@@ -93,7 +110,7 @@ const Navbar = () => {
                 className="text-primary font-semibold hover:text-primary/80 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
-                YouTube
+                {t.nav.youtube}
               </a>
             </div>
           </motion.div>
