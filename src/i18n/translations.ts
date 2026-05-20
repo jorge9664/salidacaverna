@@ -112,8 +112,8 @@ export const translations = {
   en: {
     htmlLang: "en",
     nav: {
-      brandPrefix: "Out of",
-      brandSuffix: " the cave",
+      brandPrefix: "La salida",
+      brandSuffix: " de la caverna",
       links: [
         { href: "#about", label: "Project" },
         { href: "#social", label: "Social" },
@@ -124,7 +124,7 @@ export const translations = {
       langSwitchAria: "Cambiar a español",
     },
     hero: {
-      kicker: "Out of the cave",
+      kicker: "La salida de la caverna",
       titleLine1: "What no one",
       titleLine2: "tells you",
       subtitle:
@@ -134,7 +134,7 @@ export const translations = {
       heroAlt: "Cave with light — a metaphor for critical thinking",
     },
     about: {
-      title: "What is Out of the Cave?",
+      title: "What is La salida de la caverna?",
       intro:
         "A talk show where real people discuss what truly matters. No empty speeches, no forced debates: this is a place to think out loud, disagree respectfully, and say what many think but few dare to say.",
       quote:
@@ -212,7 +212,7 @@ export const translations = {
     },
     footer: {
       tagline: "Follow us so you don't miss a single conversation.",
-      brand: "Out of the cave",
+      brand: "La salida de la caverna",
       brandSub: "Real conversations from the classroom.",
       rights: "All rights reserved.",
     },
