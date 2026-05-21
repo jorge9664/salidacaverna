@@ -9,7 +9,7 @@ import LatestVideosSection from "@/components/LatestVideosSection";
 import SocialSection from "@/components/SocialSection";
 import ContactSection from "@/components/ContactSection";
 import FooterSection from "@/components/FooterSection";
-import AdSlot from "@/components/AdSlot";
+import { AdBlockFinal } from "@/components/AdBlockFinal";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { Lang } from "@/i18n/translations";
 
@@ -27,7 +27,7 @@ const Index = ({ lang = "es" }: { lang?: Lang }) => {
         <SocialSection />
         <ContactSection />
         <div className="container px-4">
-          <AdSlot slot="0000000000" />
+          <AdBlockFinal />
         </div>
         <FooterSection />
       </div>
