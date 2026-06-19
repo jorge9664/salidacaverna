@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, Settings, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Package, Settings, LogOut, ExternalLink, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/admin", label: "Panel", icon: LayoutDashboard, end: true },
   { to: "/admin/products", label: "Productos", icon: Package, end: false },
+  { to: "/admin/articles", label: "Artículos", icon: FileText, end: false },
   { to: "/admin/settings", label: "Configuración Web", icon: Settings, end: false },
 ];
 
