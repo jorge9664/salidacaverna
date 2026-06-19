@@ -11,6 +11,9 @@ import AdminLayout from "./pages/admin/AdminLayout.tsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
+import AdminArticles from "./pages/admin/AdminArticles.tsx";
+import Articles from "./pages/Articles.tsx";
+import ArticleDetail from "./pages/ArticleDetail.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 
@@ -27,6 +30,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/en" element={<IndexEn />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/articulos" element={<Articles />} />
+            <Route path="/articulos/:slug" element={<ArticleDetail />} />
             <Route
               path="/admin"
               element={
@@ -37,6 +42,7 @@ const App = () => (
             >
               <Route index element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
+              <Route path="articles" element={<AdminArticles />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
