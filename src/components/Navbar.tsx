@@ -44,6 +44,12 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
+          <Link
+            to="/articulos"
+            className="relative text-muted-foreground hover:text-foreground transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-1 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left after:rounded-full"
+          >
+            Artículos
+          </Link>
           <a
             href="https://www.youtube.com/@salidadelacaverna"
             target="_blank"
@@ -103,6 +109,13 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
+              <Link
+                to="/articulos"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Artículos
+              </Link>
               <a
                 href="https://www.youtube.com/@salidadelacaverna"
                 target="_blank"
