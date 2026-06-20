@@ -84,6 +84,13 @@ const ContactSection = () => {
 
     setSubmitting(true);
     try {
+      // Guarda el mensaje en la base de datos del admin
+      await supabase.from("contact_messages").insert({
+        name: values.name,
+        email: values.email,
+        subject: values.subject,
+        message: values.message,
+      });
       // Apps Script acepta text/plain sin preflight CORS
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
