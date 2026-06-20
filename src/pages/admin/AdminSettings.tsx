@@ -7,19 +7,26 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+const urlOrEmpty = z.string().trim().max(500).url("URL inválida").or(z.literal(""));
 const schema = z.object({
   banner_title: z.string().trim().max(200),
   banner_subtitle: z.string().trim().max(400),
   banner_cta_text: z.string().trim().max(80),
   maintenance_mode: z.boolean(),
   maintenance_message: z.string().trim().max(500),
-  youtube_url: z.string().trim().max(500).url("URL inválida").or(z.literal("")),
-  instagram_url: z.string().trim().max(500).url("URL inválida").or(z.literal("")),
-  tiktok_url: z.string().trim().max(500).url("URL inválida").or(z.literal("")),
+  youtube_url: urlOrEmpty,
+  instagram_url: urlOrEmpty,
+  tiktok_url: urlOrEmpty,
+  notification_email: z.string().trim().email("Email inválido").or(z.literal("")),
+  og_image: urlOrEmpty,
+  favicon_url: urlOrEmpty,
+  seo_title: z.string().trim().max(160),
+  seo_description: z.string().trim().max(320),
 });
 
 const AdminSettings = () => {
@@ -34,6 +41,11 @@ const AdminSettings = () => {
     youtube_url: "",
     instagram_url: "",
     tiktok_url: "",
+    notification_email: "",
+    og_image: "",
+    favicon_url: "",
+    seo_title: "",
+    seo_description: "",
   });
 
   useEffect(() => {
@@ -47,6 +59,11 @@ const AdminSettings = () => {
         youtube_url: settings.youtube_url ?? "",
         instagram_url: settings.instagram_url ?? "",
         tiktok_url: settings.tiktok_url ?? "",
+        notification_email: (settings as any).notification_email ?? "",
+        og_image: (settings as any).og_image ?? "",
+        favicon_url: (settings as any).favicon_url ?? "",
+        seo_title: (settings as any).seo_title ?? "",
+        seo_description: (settings as any).seo_description ?? "",
       });
     }
   }, [settings]);
@@ -58,18 +75,24 @@ const AdminSettings = () => {
       return;
     }
     setSaving(true);
+    const d = parsed.data;
     const { error } = await supabase
       .from("site_settings")
       .update({
-        banner_title: parsed.data.banner_title || null,
-        banner_subtitle: parsed.data.banner_subtitle || null,
-        banner_cta_text: parsed.data.banner_cta_text || null,
-        maintenance_mode: parsed.data.maintenance_mode,
-        maintenance_message: parsed.data.maintenance_message || null,
-        youtube_url: parsed.data.youtube_url || null,
-        instagram_url: parsed.data.instagram_url || null,
-        tiktok_url: parsed.data.tiktok_url || null,
-      })
+        banner_title: d.banner_title || null,
+        banner_subtitle: d.banner_subtitle || null,
+        banner_cta_text: d.banner_cta_text || null,
+        maintenance_mode: d.maintenance_mode,
+        maintenance_message: d.maintenance_message || null,
+        youtube_url: d.youtube_url || null,
+        instagram_url: d.instagram_url || null,
+        tiktok_url: d.tiktok_url || null,
+        notification_email: d.notification_email || null,
+        og_image: d.og_image || null,
+        favicon_url: d.favicon_url || null,
+        seo_title: d.seo_title || null,
+        seo_description: d.seo_description || null,
+      } as any)
       .eq("id", 1);
     setSaving(false);
     if (error) {
@@ -89,14 +112,24 @@ const AdminSettings = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-3xl">
       <div>
         <h1 className="text-3xl font-bold">Configuración Web</h1>
         <p className="text-muted-foreground mt-1">
-          Cambia el contenido principal de la landing sin tocar código.
+          Cambia el contenido y los ajustes globales del sitio.
         </p>
       </div>
 
+      <Tabs defaultValue="general">
+        <TabsList>
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="seo">SEO</TabsTrigger>
+          <TabsTrigger value="social">Redes</TabsTrigger>
+          <TabsTrigger value="maintenance">Mantenimiento</TabsTrigger>
+          <TabsTrigger value="notifications">Notificaciones</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="general" className="mt-4">
       <Card className="p-6 space-y-4">
         <h2 className="font-semibold text-lg">Banner principal</h2>
         <div className="space-y-2">
@@ -128,7 +161,31 @@ const AdminSettings = () => {
           />
         </div>
       </Card>
+        </TabsContent>
 
+        <TabsContent value="seo" className="mt-4">
+          <Card className="p-6 space-y-4">
+            <h2 className="font-semibold text-lg">SEO global</h2>
+            <div className="space-y-2">
+              <Label>Título por defecto (≤60)</Label>
+              <Input value={form.seo_title} onChange={(e) => setForm({ ...form, seo_title: e.target.value })} maxLength={160} />
+            </div>
+            <div className="space-y-2">
+              <Label>Meta descripción (≤160)</Label>
+              <Textarea rows={2} value={form.seo_description} onChange={(e) => setForm({ ...form, seo_description: e.target.value })} maxLength={320} />
+            </div>
+            <div className="space-y-2">
+              <Label>URL imagen Open Graph (1200×630)</Label>
+              <Input value={form.og_image} onChange={(e) => setForm({ ...form, og_image: e.target.value })} placeholder="https://…" />
+            </div>
+            <div className="space-y-2">
+              <Label>URL favicon</Label>
+              <Input value={form.favicon_url} onChange={(e) => setForm({ ...form, favicon_url: e.target.value })} placeholder="https://…" />
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="maintenance" className="mt-4">
       <Card className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -156,7 +213,9 @@ const AdminSettings = () => {
           />
         </div>
       </Card>
+        </TabsContent>
 
+        <TabsContent value="social" className="mt-4">
       <Card className="p-6 space-y-4">
         <h2 className="font-semibold text-lg">Redes sociales</h2>
         <div className="space-y-2">
@@ -187,6 +246,19 @@ const AdminSettings = () => {
           />
         </div>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications" className="mt-4">
+          <Card className="p-6 space-y-4">
+            <h2 className="font-semibold text-lg">Notificaciones</h2>
+            <div className="space-y-2">
+              <Label>Email del administrador</Label>
+              <Input type="email" value={form.notification_email} onChange={(e) => setForm({ ...form, notification_email: e.target.value })} placeholder="tu@correo.com" />
+              <p className="text-xs text-muted-foreground">Se usará para futuras alertas de pedidos y mensajes.</p>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       <div className="flex justify-end">
         <Button onClick={save} disabled={saving}>

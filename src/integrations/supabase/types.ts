@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_views: {
+        Row: {
+          last_viewed_at: string
+          slug: string
+          views: number
+        }
+        Insert: {
+          last_viewed_at?: string
+          slug: string
+          views?: number
+        }
+        Update: {
+          last_viewed_at?: string
+          slug?: string
+          views?: number
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author: string | null
@@ -52,6 +70,135 @@ export type Database = {
           published_at?: string | null
           slug?: string
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          read: boolean
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          read?: boolean
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          read?: boolean
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          notes: string | null
+          paid_at: string | null
+          shipped_at: string | null
+          shipping_address: string | null
+          status: string
+          stripe_session_id: string | null
+          total: number
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          shipped_at?: string | null
+          shipping_address?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          total?: number
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          shipped_at?: string | null
+          shipping_address?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          total?: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -127,10 +274,15 @@ export type Database = {
           banner_cta_text: string | null
           banner_subtitle: string | null
           banner_title: string | null
+          favicon_url: string | null
           id: number
           instagram_url: string | null
           maintenance_message: string | null
           maintenance_mode: boolean
+          notification_email: string | null
+          og_image: string | null
+          seo_description: string | null
+          seo_title: string | null
           tiktok_url: string | null
           updated_at: string
           youtube_url: string | null
@@ -139,10 +291,15 @@ export type Database = {
           banner_cta_text?: string | null
           banner_subtitle?: string | null
           banner_title?: string | null
+          favicon_url?: string | null
           id?: number
           instagram_url?: string | null
           maintenance_message?: string | null
           maintenance_mode?: boolean
+          notification_email?: string | null
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           tiktok_url?: string | null
           updated_at?: string
           youtube_url?: string | null
@@ -151,10 +308,15 @@ export type Database = {
           banner_cta_text?: string | null
           banner_subtitle?: string | null
           banner_title?: string | null
+          favicon_url?: string | null
           id?: number
           instagram_url?: string | null
           maintenance_message?: string | null
           maintenance_mode?: boolean
+          notification_email?: string | null
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           tiktok_url?: string | null
           updated_at?: string
           youtube_url?: string | null
@@ -194,6 +356,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_article_view: { Args: { _slug: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "editor" | "user"
