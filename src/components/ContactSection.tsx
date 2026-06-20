@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useLang } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 // 👉 Pega aquí la URL del Apps Script desplegado como Web App
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6VKm4Wux7NGK-lPL_X7ItaNvyjej3nm5QNF36bODdKB9WnpxOmLYKUjr3i_T3W03E/exec";
