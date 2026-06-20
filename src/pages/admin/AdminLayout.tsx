@@ -1,15 +1,18 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, Settings, LogOut, ExternalLink, FileText } from "lucide-react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-const navItems = [
-  { to: "/admin", label: "Panel", icon: LayoutDashboard, end: true },
-  { to: "/admin/products", label: "Productos", icon: Package, end: false },
-  { to: "/admin/articles", label: "Artículos", icon: FileText, end: false },
-  { to: "/admin/settings", label: "Configuración Web", icon: Settings, end: false },
-];
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AppSidebar } from "@/components/admin/AppSidebar";
 
 const AdminLayout = () => {
   const { user, signOut } = useAuth();
@@ -20,58 +23,54 @@ const AdminLayout = () => {
     navigate("/", { replace: true });
   };
 
+  const initial = (user?.email ?? "?").slice(0, 1).toUpperCase();
+  const avatarUrl = (user?.user_metadata as { avatar_url?: string } | undefined)?.avatar_url;
+
   return (
-    <div className="min-h-screen flex w-full bg-background text-foreground">
-      <aside className="w-64 border-r border-border bg-card/40 flex flex-col">
-        <div className="px-6 py-6 border-b border-border">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Admin</p>
-          <h1 className="text-lg font-bold mt-1">La salida de la caverna</h1>
-        </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background text-foreground">
+        <AppSidebar />
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
-                  isActive
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                )
-              }
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="h-14 flex items-center justify-between gap-3 border-b border-border bg-card/40 backdrop-blur px-3 sticky top-0 z-30">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger />
+              <span className="text-sm text-muted-foreground hidden sm:inline">Panel de administración</span>
+            </div>
 
-        <div className="p-3 border-t border-border space-y-2">
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Ver sitio público
-          </a>
-          <div className="px-3 py-2 text-xs text-muted-foreground truncate">{user?.email}</div>
-          <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" /> Cerrar sesión
-          </Button>
-        </div>
-      </aside>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 px-2">
+                  <Avatar className="h-7 w-7">
+                    {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
+                    <AvatarFallback className="text-xs bg-primary/20 text-primary">
+                      {initial}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm hidden sm:inline max-w-[180px] truncate">{user?.email}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="truncate">{user?.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/")}>
+                  <UserIcon className="mr-2 h-4 w-4" /> Volver al sitio
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" /> Cerrar sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </header>
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-6xl mx-auto px-8 py-10">
-          <Outlet />
+          <main className="flex-1 overflow-y-auto">
+            <div className="max-w-7xl mx-auto px-6 py-8">
+              <Outlet />
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 };
 

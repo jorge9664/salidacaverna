@@ -46,6 +46,8 @@ const ArticleDetail = () => {
         setNotFound(true);
       } else {
         setArticle(data as Article);
+        // Incrementa contador de visitas (RPC pública, segura)
+        supabase.rpc("increment_article_view", { _slug: slug }).then(() => {});
         document.title = `${data.title} | La salida de la caverna`;
         if (data.excerpt) {
           let meta = document.querySelector('meta[name="description"]');
