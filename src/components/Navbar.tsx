@@ -33,9 +33,9 @@ const Navbar = () => {
       }`}
     >
       <div className="container px-4 py-4 flex items-center justify-between">
-        <a href="#" className="text-foreground font-bold text-lg tracking-tight">
+        <Link to="/" className="text-foreground font-bold text-lg tracking-tight">
           <span className="text-primary">{t.nav.brandPrefix}</span>{t.nav.brandSuffix}
-        </a>
+        </Link>
 
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-6 text-sm">
