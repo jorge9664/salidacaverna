@@ -12,6 +12,11 @@ import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminArticles from "./pages/admin/AdminArticles.tsx";
+import AdminOrders from "./pages/admin/AdminOrders.tsx";
+import AdminUsers from "./pages/admin/AdminUsers.tsx";
+import AdminMessages from "./pages/admin/AdminMessages.tsx";
+import AdminMedia from "./pages/admin/AdminMedia.tsx";
+import AdminAnalytics from "./pages/admin/AdminAnalytics.tsx";
 import Articles from "./pages/Articles.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -43,6 +48,11 @@ const App = () => (
               <Route index element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="articles" element={<AdminArticles />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="messages" element={<AdminMessages />} />
+              <Route path="media" element={<AdminMedia />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
