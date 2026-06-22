@@ -1,13 +1,25 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Globe } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
 
-const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-  e.preventDefault();
-  const target = document.querySelector(href);
-  target?.scrollIntoView({ behavior: "smooth" });
+const useSmoothScroll = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    if (location.pathname !== "/" && location.pathname !== "/en") {
+      const prefix = location.pathname.startsWith("/en") ? "/en" : "/";
+      navigate(`${prefix}${href}`);
+      return;
+    }
+    const target = document.querySelector(href);
+    target?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return handleSmoothScroll;
 };
 
 const linkClass =
@@ -19,6 +31,7 @@ const Navbar = () => {
   const otherPath = lang === "es" ? "/en" : "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const handleSmoothScroll = useSmoothScroll();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
