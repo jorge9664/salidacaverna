@@ -31,6 +31,7 @@ const Navbar = () => {
   const otherPath = lang === "es" ? "/en" : "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const handleSmoothScroll = useSmoothScroll();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
