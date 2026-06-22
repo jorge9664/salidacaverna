@@ -9,9 +9,10 @@ export const translations = {
       links: [
         { href: "#about", label: "Proyecto" },
         { href: "#social", label: "Redes" },
+        { href: "/articulos", label: "Artículos" },
         { href: "#contact", label: "Contacto" },
       ],
-      youtube: "YouTube",
+      youtube: "Episodios",
       langSwitch: "EN",
       langSwitchAria: "Switch to English",
     },
@@ -117,9 +118,10 @@ export const translations = {
       links: [
         { href: "#about", label: "Project" },
         { href: "#social", label: "Social" },
+        { href: "/articulos", label: "Articles" },
         { href: "#contact", label: "Contact" },
       ],
-      youtube: "YouTube",
+      youtube: "Episodes",
       langSwitch: "ES",
       langSwitchAria: "Cambiar a español",
     },
