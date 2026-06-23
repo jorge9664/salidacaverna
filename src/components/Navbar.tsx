@@ -89,7 +89,7 @@ const useActiveSection = (hrefs: string[]) => {
 };
 
 const Navbar = () => {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
