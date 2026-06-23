@@ -8,6 +8,22 @@ const useSmoothScroll = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const scrollToHash = (href: string) => {
+    const target = document.querySelector(href);
+    if (!target) return;
+
+    const navbarOffset = 88;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarOffset;
+    window.scrollTo({ top: targetTop, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (!location.hash || (location.pathname !== "/" && location.pathname !== "/en")) return;
+
+    const timeout = window.setTimeout(() => scrollToHash(location.hash), 120);
+    return () => window.clearTimeout(timeout);
+  }, [location.pathname, location.hash]);
+
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     if (location.pathname !== "/" && location.pathname !== "/en") {
@@ -15,8 +31,7 @@ const useSmoothScroll = () => {
       navigate(`${prefix}${href}`);
       return;
     }
-    const target = document.querySelector(href);
-    target?.scrollIntoView({ behavior: "smooth" });
+    scrollToHash(href);
   };
 
   return handleSmoothScroll;
