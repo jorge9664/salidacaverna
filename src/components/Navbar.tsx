@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const useSmoothScroll = () => {
   const location = useLocation();
@@ -88,9 +89,8 @@ const useActiveSection = (hrefs: string[]) => {
 };
 
 const Navbar = () => {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const location = useLocation();
-  const otherPath = lang === "es" ? "/en" : "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const handleSmoothScroll = useSmoothScroll();
@@ -145,26 +145,12 @@ const Navbar = () => {
           >
             {t.nav.youtube}
           </a>
-          <Link
-            to={otherPath}
-            aria-label={t.nav.langSwitchAria}
-            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors border border-border hover:border-primary/40 rounded-full px-3 py-1 text-xs font-semibold"
-          >
-            <Globe size={14} />
-            {t.nav.langSwitch}
-          </Link>
+          <LanguageSwitcher />
         </div>
 
         {/* Mobile toggle */}
         <div className="sm:hidden flex items-center gap-3">
-          <Link
-            to={otherPath}
-            aria-label={t.nav.langSwitchAria}
-            className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary border border-border rounded-full px-2.5 py-1 text-xs font-semibold"
-          >
-            <Globe size={12} />
-            {t.nav.langSwitch}
-          </Link>
+          <LanguageSwitcher compact />
           <button
             className="text-foreground p-1"
             onClick={() => setMenuOpen((prev) => !prev)}
