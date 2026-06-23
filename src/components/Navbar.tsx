@@ -14,7 +14,10 @@ const useSmoothScroll = () => {
 
     const navbarOffset = 88;
     const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarOffset;
-    window.scrollTo({ top: targetTop, behavior: "smooth" });
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: targetTop, behavior: prefersReducedMotion ? "auto" : "smooth" });
   };
 
   useEffect(() => {
