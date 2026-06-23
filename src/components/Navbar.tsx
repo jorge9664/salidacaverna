@@ -40,6 +40,50 @@ const useSmoothScroll = () => {
 const linkClass =
   "relative text-muted-foreground hover:text-foreground transition-colors after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-1 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left after:rounded-full";
 
+const activeLinkClass =
+  "relative text-foreground transition-colors after:content-[''] after:absolute after:w-full after:scale-x-100 after:h-1 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-primary after:to-accent after:rounded-full";
+
+const useActiveSection = (hrefs: string[]) => {
+  const location = useLocation();
+  const [active, setActive] = useState<string | null>(null);
+
+  useEffect(() => {
+    setActive(null);
+    const isHome = location.pathname === "/" || location.pathname === "/en";
+    if (!isHome) return;
+
+    const hashes = hrefs.filter((h) => h.startsWith("#"));
+    const elements = hashes
+      .map((h) => document.querySelector(h) as HTMLElement | null)
+      .filter((el): el is HTMLElement => !!el);
+    if (!elements.length) return;
+
+    const computeActive = () => {
+      const probe = window.innerHeight * 0.35 + 88;
+      let current: string | null = null;
+      for (const el of elements) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= probe) current = `#${el.id}`;
+      }
+      if (window.scrollY + window.innerHeight >= document.body.scrollHeight - 4) {
+        current = `#${elements[elements.length - 1].id}`;
+      }
+      if (window.scrollY < 80) current = null;
+      setActive(current);
+    };
+
+    computeActive();
+    window.addEventListener("scroll", computeActive, { passive: true });
+    window.addEventListener("resize", computeActive);
+    return () => {
+      window.removeEventListener("scroll", computeActive);
+      window.removeEventListener("resize", computeActive);
+    };
+  }, [hrefs.join("|"), location.pathname]);
+
+  return active;
+};
+
 const Navbar = () => {
   const { t, lang } = useLang();
   const location = useLocation();
@@ -47,6 +91,15 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const handleSmoothScroll = useSmoothScroll();
+  const activeHash = useActiveSection(t.nav.links.map((l) => l.href));
+
+  const isActive = (href: string) => {
+    if (href.startsWith("/")) {
+      if (href === "/" || href === "/en") return false;
+      return location.pathname === href || location.pathname.startsWith(`${href}/`);
+    }
+    return activeHash === href;
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -72,11 +125,11 @@ const Navbar = () => {
         <div className="hidden sm:flex items-center gap-6 text-sm">
           {t.nav.links.map((link) =>
             link.href.startsWith("/") ? (
-              <Link key={link.href} to={link.href} className={linkClass}>
+              <Link key={link.href} to={link.href} className={isActive(link.href) ? activeLinkClass : linkClass}>
                 {link.label}
               </Link>
             ) : (
-              <a key={link.href} href={link.href} onClick={(e) => handleSmoothScroll(e, link.href)} className={linkClass}>
+              <a key={link.href} href={link.href} onClick={(e) => handleSmoothScroll(e, link.href)} className={isActive(link.href) ? activeLinkClass : linkClass}>
                 {link.label}
               </a>
             )
@@ -135,7 +188,7 @@ const Navbar = () => {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className={`transition-colors ${isActive(link.href) ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}
                     onClick={() => setMenuOpen(false)}
                   >
                     {link.label}
@@ -144,7 +197,7 @@ const Navbar = () => {
                   <a
                     key={link.href}
                     href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className={`transition-colors ${isActive(link.href) ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}
                     onClick={(e) => { handleSmoothScroll(e, link.href); setMenuOpen(false); }}
                   >
                     {link.label}
