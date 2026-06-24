@@ -1,7 +1,6 @@
 import "@fontsource/space-grotesk/400.css";
 import "@fontsource/space-grotesk/500.css";
 import "@fontsource/space-grotesk/700.css";
-import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -14,23 +13,17 @@ import MerchSection from "@/components/MerchSection";
 import MaintenanceScreen from "@/components/MaintenanceScreen";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
-import { LanguageProvider } from "@/i18n/LanguageContext";
-import { Lang } from "@/i18n/translations";
 
-const Index = ({ lang = "es" }: { lang?: Lang }) => {
+const Index = () => {
   const { settings } = useSiteSettings();
   const { isAdmin } = useAuth();
-  useEffect(() => {
-    document.documentElement.lang = lang;
-  }, [lang]);
 
   if (settings?.maintenance_mode && !isAdmin) {
     return <MaintenanceScreen message={settings.maintenance_message} />;
   }
 
   return (
-    <LanguageProvider lang={lang}>
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
         <Navbar />
         <HeroSection />
         <AboutSection />
@@ -42,8 +35,7 @@ const Index = ({ lang = "es" }: { lang?: Lang }) => {
           <AdBlockFinal />
         </div>
         <FooterSection />
-      </div>
-    </LanguageProvider>
+    </div>
   );
 };
 
