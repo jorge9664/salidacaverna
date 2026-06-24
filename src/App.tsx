@@ -21,6 +21,7 @@ import Articles from "./pages/Articles.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
+          <LanguageProvider>
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/en" element={<IndexEn />} />
             <Route path="/auth" element={<AuthPage />} />
@@ -57,7 +59,8 @@ const App = () => (
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

@@ -1,6 +1,6 @@
 import { Globe, Check } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
+import type { Lang } from "@/i18n/translations";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,50 +9,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type LangOption = {
-  code: string;
+  code: Lang;
   label: string;
   flag: string;
-  /** "es" → "/", "en" → "/en", others → Google Translate target code */
-  kind: "native" | "translate";
-  translateCode?: string;
 };
 
 const LANGUAGES: LangOption[] = [
-  { code: "es", label: "Español", flag: "🇪🇸", kind: "native" },
-  { code: "en", label: "English", flag: "🇬🇧", kind: "native" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪", kind: "translate", translateCode: "de" },
-  { code: "fr", label: "Français", flag: "🇫🇷", kind: "translate", translateCode: "fr" },
-  { code: "it", label: "Italiano", flag: "🇮🇹", kind: "translate", translateCode: "it" },
-  { code: "pt", label: "Português", flag: "🇵🇹", kind: "translate", translateCode: "pt" },
-  { code: "ru", label: "Русский", flag: "🇷🇺", kind: "translate", translateCode: "ru" },
-  { code: "uk", label: "Українська", flag: "🇺🇦", kind: "translate", translateCode: "uk" },
-  { code: "sv", label: "Svenska", flag: "🇸🇪", kind: "translate", translateCode: "sv" },
-  { code: "zh", label: "中文", flag: "🇨🇳", kind: "translate", translateCode: "zh-CN" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "de", label: "Deutsch", flag: "🇩🇪" },
+  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "it", label: "Italiano", flag: "🇮🇹" },
+  { code: "pt", label: "Português", flag: "🇵🇹" },
+  { code: "ru", label: "Русский", flag: "🇷🇺" },
+  { code: "uk", label: "Українська", flag: "🇺🇦" },
+  { code: "sv", label: "Svenska", flag: "🇸🇪" },
+  { code: "zh", label: "中文", flag: "🇨🇳" },
 ];
 
-type Props = {
-  compact?: boolean;
-};
+type Props = { compact?: boolean };
 
 const LanguageSwitcher = ({ compact = false }: Props) => {
-  const { lang } = useLang();
-  const navigate = useNavigate();
-  const location = useLocation();
-
+  const { lang, setLang } = useLang();
   const current = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
-
-  const handleSelect = (opt: LangOption) => {
-    if (opt.kind === "native") {
-      const restPath = location.pathname.replace(/^\/en(?=\/|$)/, "") || "/";
-      const target = opt.code === "en" ? `/en${restPath === "/" ? "" : restPath}` : restPath;
-      if (target !== location.pathname) navigate(target);
-      return;
-    }
-    // Use Google Translate as a transparent proxy for non-native languages.
-    const fullUrl = window.location.origin + location.pathname + location.search + location.hash;
-    const translateUrl = `https://translate.google.com/translate?sl=auto&tl=${opt.translateCode}&u=${encodeURIComponent(fullUrl)}`;
-    window.open(translateUrl, "_blank", "noopener,noreferrer");
-  };
 
   const triggerClass = compact
     ? "inline-flex items-center gap-1 text-muted-foreground hover:text-primary border border-border rounded-full px-2.5 py-1 text-xs font-semibold"
@@ -68,13 +47,13 @@ const LanguageSwitcher = ({ compact = false }: Props) => {
         <span aria-hidden>{current.flag}</span>
         <span className="uppercase">{current.code}</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[180px]">
+      <DropdownMenuContent align="end" className="min-w-[180px] max-h-[70vh] overflow-y-auto">
         {LANGUAGES.map((opt) => {
           const isCurrent = opt.code === current.code;
           return (
             <DropdownMenuItem
               key={opt.code}
-              onClick={() => handleSelect(opt)}
+              onClick={() => setLang(opt.code)}
               className="flex items-center gap-2 cursor-pointer"
             >
               <span aria-hidden className="text-base leading-none">{opt.flag}</span>
