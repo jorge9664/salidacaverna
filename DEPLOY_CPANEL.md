@@ -1,3 +1,23 @@
+
+## Autenticación (Google / Supabase) en dominios externos
+
+El helper `src/lib/authRedirect.ts` centraliza el flujo:
+
+- En `*.lovable.app` y `localhost` se usa `lovable.auth.signInWithOAuth` (proxy `/~oauth/*`).
+- En cualquier otro dominio se llama directamente a `supabase.auth.signInWithOAuth`.
+
+Para que el callback funcione en tu hosting (p.ej. `https://salidacaverna.es`)
+añade estas URLs en **Cloud → Users → URL Configuration → Redirect URLs**:
+
+- `https://salidacaverna.es`
+- `https://salidacaverna.es/`
+- `https://salidacaverna.es/admin`
+- `https://www.salidacaverna.es`
+- `https://www.salidacaverna.es/`
+- `https://www.salidacaverna.es/admin`
+
+Y añade el mismo `/admin` como **Authorized redirect URI** en la consola de Google
+Cloud si usas tus propias credenciales OAuth.
 # Despliegue en cPanel (vía Git)
 
 ## 1. Variables de entorno
