@@ -11,7 +11,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
-export type OAuthProvider = "google" | "apple" | "microsoft";
+export type OAuthProvider = "google" | "apple";
 
 export const isLovableManagedHost = (host: string = window.location.hostname) =>
   host.endsWith("lovable.app") ||
