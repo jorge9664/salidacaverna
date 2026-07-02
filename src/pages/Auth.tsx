@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  getEmailRedirectUri,
+  signInWithProvider,
+} from "@/lib/authRedirect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,7 +52,7 @@ const AuthPage = () => {
       } else {
         const { error } = await supabase.auth.signUp({
           ...parsed.data,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
+          options: { emailRedirectTo: getEmailRedirectUri() },
         });
         if (error) throw error;
         toast.success("Cuenta creada. Revisa tu email si se requiere confirmación.");
@@ -64,23 +67,8 @@ const AuthPage = () => {
 
   const handleGoogle = async () => {
     setSubmitting(true);
-    const host = window.location.hostname;
-    const isLovableHost = host.endsWith("lovable.app") || host === "localhost" || host === "127.0.0.1";
     try {
-      if (isLovableHost) {
-        const result = await lovable.auth.signInWithOAuth("google", {
-          redirect_uri: window.location.origin,
-        });
-        if (result.error) throw result.error;
-      } else {
-        // Producción externa (cPanel u otro hosting): usa el flujo OAuth
-        // directo de Supabase para no depender de las rutas /~oauth de Lovable.
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-      }
+      await signInWithProvider("google");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "No se pudo iniciar sesión con Google";
       toast.error(msg);
