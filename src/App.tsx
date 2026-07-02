@@ -22,6 +22,7 @@ import ArticleDetail from "./pages/ArticleDetail.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <LanguageProvider>
+            <ScrollToTop />
             <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/en" element={<IndexEn />} />

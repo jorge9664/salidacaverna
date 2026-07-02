@@ -64,11 +64,26 @@ const AuthPage = () => {
 
   const handleGoogle = async () => {
     setSubmitting(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/admin`,
-    });
-    if (result.error) {
-      toast.error("No se pudo iniciar sesión con Google");
+    const host = window.location.hostname;
+    const isLovableHost = host.endsWith("lovable.app") || host === "localhost" || host === "127.0.0.1";
+    try {
+      if (isLovableHost) {
+        const result = await lovable.auth.signInWithOAuth("google", {
+          redirect_uri: window.location.origin,
+        });
+        if (result.error) throw result.error;
+      } else {
+        // Producción externa (cPanel u otro hosting): usa el flujo OAuth
+        // directo de Supabase para no depender de las rutas /~oauth de Lovable.
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo: `${window.location.origin}/admin` },
+        });
+        if (error) throw error;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "No se pudo iniciar sesión con Google";
+      toast.error(msg);
       setSubmitting(false);
     }
   };
