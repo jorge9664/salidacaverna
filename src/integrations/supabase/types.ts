@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          id: number
+          notification_email: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          notification_email?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          notification_email?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       article_views: {
         Row: {
           last_viewed_at: string
@@ -279,7 +297,6 @@ export type Database = {
           instagram_url: string | null
           maintenance_message: string | null
           maintenance_mode: boolean
-          notification_email: string | null
           og_image: string | null
           seo_description: string | null
           seo_title: string | null
@@ -296,7 +313,6 @@ export type Database = {
           instagram_url?: string | null
           maintenance_message?: string | null
           maintenance_mode?: boolean
-          notification_email?: string | null
           og_image?: string | null
           seo_description?: string | null
           seo_title?: string | null
@@ -313,7 +329,6 @@ export type Database = {
           instagram_url?: string | null
           maintenance_message?: string | null
           maintenance_mode?: boolean
-          notification_email?: string | null
           og_image?: string | null
           seo_description?: string | null
           seo_title?: string | null

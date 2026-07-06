@@ -32,6 +32,7 @@ const schema = z.object({
 const AdminSettings = () => {
   const { settings, loading, reload } = useSiteSettings();
   const [saving, setSaving] = useState(false);
+  const [notificationEmail, setNotificationEmail] = useState("");
   const [form, setForm] = useState({
     banner_title: "",
     banner_subtitle: "",
@@ -59,7 +60,7 @@ const AdminSettings = () => {
         youtube_url: settings.youtube_url ?? "",
         instagram_url: settings.instagram_url ?? "",
         tiktok_url: settings.tiktok_url ?? "",
-        notification_email: (settings as any).notification_email ?? "",
+        notification_email: "",
         og_image: (settings as any).og_image ?? "",
         favicon_url: (settings as any).favicon_url ?? "",
         seo_title: (settings as any).seo_title ?? "",
@@ -67,6 +68,19 @@ const AdminSettings = () => {
       });
     }
   }, [settings]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("admin_settings")
+        .select("notification_email")
+        .eq("id", 1)
+        .maybeSingle();
+      const email = data?.notification_email ?? "";
+      setNotificationEmail(email);
+      setForm((f) => ({ ...f, notification_email: email }));
+    })();
+  }, []);
 
   const save = async () => {
     const parsed = schema.safeParse(form);
@@ -87,16 +101,23 @@ const AdminSettings = () => {
         youtube_url: d.youtube_url || null,
         instagram_url: d.instagram_url || null,
         tiktok_url: d.tiktok_url || null,
-        notification_email: d.notification_email || null,
         og_image: d.og_image || null,
         favicon_url: d.favicon_url || null,
         seo_title: d.seo_title || null,
         seo_description: d.seo_description || null,
       } as any)
       .eq("id", 1);
-    setSaving(false);
     if (error) {
+      setSaving(false);
       toast.error(error.message);
+      return;
+    }
+    const { error: adminErr } = await (supabase as any)
+      .from("admin_settings")
+      .upsert({ id: 1, notification_email: d.notification_email || null });
+    setSaving(false);
+    if (adminErr) {
+      toast.error(adminErr.message);
       return;
     }
     toast.success("Configuración guardada");
