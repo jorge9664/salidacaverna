@@ -11,6 +11,10 @@ export interface SiteSettings {
   youtube_url: string | null;
   instagram_url: string | null;
   tiktok_url: string | null;
+  spotify_url: string | null;
+  ivoox_url: string | null;
+  apple_podcasts_url: string | null;
+  amazon_music_url: string | null;
 }
 
 export const useSiteSettings = () => {
