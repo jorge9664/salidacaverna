@@ -22,6 +22,10 @@ const schema = z.object({
   youtube_url: urlOrEmpty,
   instagram_url: urlOrEmpty,
   tiktok_url: urlOrEmpty,
+  spotify_url: urlOrEmpty,
+  ivoox_url: urlOrEmpty,
+  apple_podcasts_url: urlOrEmpty,
+  amazon_music_url: urlOrEmpty,
   notification_email: z.string().trim().email("Email inválido").or(z.literal("")),
   og_image: urlOrEmpty,
   favicon_url: urlOrEmpty,
@@ -42,6 +46,10 @@ const AdminSettings = () => {
     youtube_url: "",
     instagram_url: "",
     tiktok_url: "",
+    spotify_url: "",
+    ivoox_url: "",
+    apple_podcasts_url: "",
+    amazon_music_url: "",
     notification_email: "",
     og_image: "",
     favicon_url: "",
@@ -60,6 +68,10 @@ const AdminSettings = () => {
         youtube_url: settings.youtube_url ?? "",
         instagram_url: settings.instagram_url ?? "",
         tiktok_url: settings.tiktok_url ?? "",
+        spotify_url: (settings as any).spotify_url ?? "",
+        ivoox_url: (settings as any).ivoox_url ?? "",
+        apple_podcasts_url: (settings as any).apple_podcasts_url ?? "",
+        amazon_music_url: (settings as any).amazon_music_url ?? "",
         notification_email: "",
         og_image: (settings as any).og_image ?? "",
         favicon_url: (settings as any).favicon_url ?? "",
@@ -101,6 +113,10 @@ const AdminSettings = () => {
         youtube_url: d.youtube_url || null,
         instagram_url: d.instagram_url || null,
         tiktok_url: d.tiktok_url || null,
+        spotify_url: d.spotify_url || null,
+        ivoox_url: d.ivoox_url || null,
+        apple_podcasts_url: d.apple_podcasts_url || null,
+        amazon_music_url: d.amazon_music_url || null,
         og_image: d.og_image || null,
         favicon_url: d.favicon_url || null,
         seo_title: d.seo_title || null,
@@ -264,6 +280,42 @@ const AdminSettings = () => {
             value={form.tiktok_url}
             onChange={(e) => setForm((f) => ({ ...f, tiktok_url: e.target.value }))}
             placeholder="https://tiktok.com/..."
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="s-sp">Spotify</Label>
+          <Input
+            id="s-sp"
+            value={form.spotify_url}
+            onChange={(e) => setForm((f) => ({ ...f, spotify_url: e.target.value }))}
+            placeholder="https://spotify.salidacaverna.es/"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="s-iv">iVoox</Label>
+          <Input
+            id="s-iv"
+            value={form.ivoox_url}
+            onChange={(e) => setForm((f) => ({ ...f, ivoox_url: e.target.value }))}
+            placeholder="https://ivoox.salidacaverna.es/"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="s-ap">Apple Podcasts</Label>
+          <Input
+            id="s-ap"
+            value={form.apple_podcasts_url}
+            onChange={(e) => setForm((f) => ({ ...f, apple_podcasts_url: e.target.value }))}
+            placeholder="https://podcasts.apple.com/..."
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="s-am">Amazon Music</Label>
+          <Input
+            id="s-am"
+            value={form.amazon_music_url}
+            onChange={(e) => setForm((f) => ({ ...f, amazon_music_url: e.target.value }))}
+            placeholder="https://music.amazon.com/..."
           />
         </div>
       </Card>
