@@ -289,49 +289,61 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          amazon_music_url: string | null
+          apple_podcasts_url: string | null
           banner_cta_text: string | null
           banner_subtitle: string | null
           banner_title: string | null
           favicon_url: string | null
           id: number
           instagram_url: string | null
+          ivoox_url: string | null
           maintenance_message: string | null
           maintenance_mode: boolean
           og_image: string | null
           seo_description: string | null
           seo_title: string | null
+          spotify_url: string | null
           tiktok_url: string | null
           updated_at: string
           youtube_url: string | null
         }
         Insert: {
+          amazon_music_url?: string | null
+          apple_podcasts_url?: string | null
           banner_cta_text?: string | null
           banner_subtitle?: string | null
           banner_title?: string | null
           favicon_url?: string | null
           id?: number
           instagram_url?: string | null
+          ivoox_url?: string | null
           maintenance_message?: string | null
           maintenance_mode?: boolean
           og_image?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          spotify_url?: string | null
           tiktok_url?: string | null
           updated_at?: string
           youtube_url?: string | null
         }
         Update: {
+          amazon_music_url?: string | null
+          apple_podcasts_url?: string | null
           banner_cta_text?: string | null
           banner_subtitle?: string | null
           banner_title?: string | null
           favicon_url?: string | null
           id?: number
           instagram_url?: string | null
+          ivoox_url?: string | null
           maintenance_message?: string | null
           maintenance_mode?: boolean
           og_image?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          spotify_url?: string | null
           tiktok_url?: string | null
           updated_at?: string
           youtube_url?: string | null
