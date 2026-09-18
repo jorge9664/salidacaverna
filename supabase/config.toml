@@ -1,1 +1,4 @@
 project_id = "yyifxmtjpwavsacxomcj"
+
+[functions.ask-caverna]
+verify_jwt = false
