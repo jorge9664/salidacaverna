@@ -13,6 +13,7 @@ import {
   Mail,
   Wrench,
   Plus,
+  Rocket,
 } from "lucide-react";
 import {
   BarChart,
@@ -127,6 +128,23 @@ const AdminDashboard = () => {
           </Button>
         </div>
       </div>
+
+      <Card className="p-4 flex items-center gap-3">
+        <Rocket className="h-5 w-5 text-primary shrink-0" />
+        <p className="text-sm">
+          <span className="font-medium">Versión de la web:</span>{" "}
+          generada el{" "}
+          {new Date(__BUILD_TIME__).toLocaleString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          . Si publicas cambios desde Lovable, esta fecha se actualiza con la
+          nueva versión.
+        </p>
+      </Card>
 
       {settings?.maintenance_mode && (
         <Card className="p-4 border-amber-500/40 bg-amber-500/5 flex items-center gap-3">
