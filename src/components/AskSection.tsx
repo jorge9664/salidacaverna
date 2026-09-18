@@ -1,0 +1,167 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Loader2, Sparkles, Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useLang } from "@/i18n/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+type Copy = {
+  tag: string;
+  title: string;
+  subtitle: string;
+  placeholder: string;
+  send: string;
+  thinking: string;
+  error: string;
+  disclaimer: string;
+};
+
+const COPY: Record<string, Copy> = {
+  es: {
+    tag: "Pregunta y reflexiona",
+    title: "Pregunta sobre los vídeos",
+    subtitle:
+      "Escribe tu duda sobre cualquier tema o episodio y recibirás una reflexión basada en el proyecto.",
+    placeholder: "¿El bien es objetivo o depende de cada cultura?",
+    send: "Enviar pregunta",
+    thinking: "Pensando…",
+    error: "No se pudo generar la respuesta. Inténtalo de nuevo en unos instantes.",
+    disclaimer: "Respuesta generada automáticamente: una invitación a pensar, no una verdad cerrada.",
+  },
+  en: {
+    tag: "Ask and reflect",
+    title: "Ask about the videos",
+    subtitle:
+      "Write your question about any topic or episode and get a reflection based on the project.",
+    placeholder: "Is goodness objective or does it depend on each culture?",
+    send: "Send question",
+    thinking: "Thinking…",
+    error: "The answer could not be generated. Please try again in a moment.",
+    disclaimer: "Automatically generated answer: an invitation to think, not a closed truth.",
+  },
+};
+
+const AskSection = () => {
+  const { lang } = useLang();
+  const copy = COPY[lang] ?? COPY.en;
+
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const ask = async () => {
+    if (question.trim().length < 5 || loading) return;
+    setLoading(true);
+    setError(false);
+    setAnswer("");
+
+    try {
+      let titles: string[] = [];
+      try {
+        const { data } = await supabase.functions.invoke("youtube-latest");
+        const videos = (data as { videos?: { title: string }[] } | null)?.videos ?? [];
+        titles = videos.map((v) => v.title);
+      } catch {
+        /* context is optional */
+      }
+
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ask-caverna`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ question: question.trim(), lang, videos: titles }),
+      });
+
+      if (!res.ok || !res.body) throw new Error("request failed");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setAnswer(acc);
+      }
+      if (!acc.trim()) setError(true);
+    } catch (e) {
+      console.error(e);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section id="pregunta" className="py-24 bg-background">
+      <div className="container px-4 max-w-3xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-10"
+        >
+          <span className="inline-flex items-center gap-2 text-sm uppercase tracking-widest text-primary">
+            <Sparkles className="h-4 w-4" />
+            {copy.tag}
+          </span>
+          <h2 className="mt-4 text-3xl md:text-4xl font-bold">{copy.title}</h2>
+          <p className="mt-3 text-muted-foreground">{copy.subtitle}</p>
+        </motion.div>
+
+        <div className="rounded-2xl border border-border bg-card/60 backdrop-blur p-5 md:p-7 shadow-lg">
+          <Textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder={copy.placeholder}
+            maxLength={1000}
+            rows={3}
+            className="resize-none bg-background/60"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) ask();
+            }}
+          />
+          <div className="mt-4 flex justify-end">
+            <Button onClick={ask} disabled={loading || question.trim().length < 5}>
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {copy.thinking}
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" />
+                  {copy.send}
+                </>
+              )}
+            </Button>
+          </div>
+
+          {(answer || error) && (
+            <div className="mt-6 border-t border-border pt-6">
+              {error && !answer ? (
+                <p className="text-destructive text-sm">{copy.error}</p>
+              ) : (
+                <>
+                  <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
+                    {answer}
+                  </p>
+                  <p className="mt-4 text-xs text-muted-foreground">{copy.disclaimer}</p>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AskSection;
