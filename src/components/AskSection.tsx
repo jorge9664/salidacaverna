@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Send } from "lucide-react";
+import { Loader2, Sparkles, Send, History, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,32 @@ type Copy = {
   thinking: string;
   error: string;
   disclaimer: string;
+  historyTitle: string;
+  historyNote: string;
+  clear: string;
+};
+
+type HistoryEntry = { id: string; question: string; answer: string; at: number };
+
+const HISTORY_KEY = "lsdlc:ask-history";
+const HISTORY_MAX = 8;
+
+const loadHistory = (): HistoryEntry[] => {
+  try {
+    const raw = window.sessionStorage.getItem(HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? (parsed as HistoryEntry[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveHistory = (entries: HistoryEntry[]) => {
+  try {
+    window.sessionStorage.setItem(HISTORY_KEY, JSON.stringify(entries));
+  } catch {
+    /* sessionStorage unavailable */
+  }
 };
 
 const COPY: Record<string, Copy> = {
