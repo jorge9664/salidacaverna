@@ -13,6 +13,7 @@ import {
   Mail,
   Wrench,
   Plus,
+  Rocket,
 } from "lucide-react";
 import {
   BarChart,
