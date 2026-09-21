@@ -155,6 +155,13 @@ const AskSection = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const useSuggestion = (q: string) => {
+    setQuestion(q);
+    setError(false);
+    textareaRef.current?.focus();
+  };
 
   useEffect(() => {
     setHistory(loadHistory());
