@@ -54,6 +54,10 @@ const COPY: Record<string, Copy> = {
     thinking: "Pensando…",
     error: "No se pudo generar la respuesta. Inténtalo de nuevo en unos instantes.",
     disclaimer: "Respuesta generada automáticamente: una invitación a pensar, no una verdad cerrada.",
+    historyTitle: "Tus preguntas recientes",
+    historyNote:
+      "Anónimo y solo en esta sesión: al cerrar la pestaña se borra. Toca una pregunta para retomar la reflexión.",
+    clear: "Borrar historial",
   },
   en: {
     tag: "Ask and reflect",
@@ -65,6 +69,10 @@ const COPY: Record<string, Copy> = {
     thinking: "Thinking…",
     error: "The answer could not be generated. Please try again in a moment.",
     disclaimer: "Automatically generated answer: an invitation to think, not a closed truth.",
+    historyTitle: "Your recent questions",
+    historyNote:
+      "Anonymous and session-only: it is cleared when you close the tab. Tap a question to continue the reflection.",
+    clear: "Clear history",
   },
 };
 
