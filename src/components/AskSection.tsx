@@ -81,6 +81,7 @@ const COPY: Record<string, Copy> = {
     historyNote:
       "Anonymous and session-only: it is cleared when you close the tab. Tap a question to continue the reflection.",
     clear: "Clear history",
+    suggestionsTitle: "Where to start?",
   },
 };
 
