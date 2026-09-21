@@ -54,6 +54,10 @@ const COPY: Record<string, Copy> = {
     thinking: "Pensando…",
     error: "No se pudo generar la respuesta. Inténtalo de nuevo en unos instantes.",
     disclaimer: "Respuesta generada automáticamente: una invitación a pensar, no una verdad cerrada.",
+    historyTitle: "Tus preguntas recientes",
+    historyNote:
+      "Anónimo y solo en esta sesión: al cerrar la pestaña se borra. Toca una pregunta para retomar la reflexión.",
+    clear: "Borrar historial",
   },
   en: {
     tag: "Ask and reflect",
@@ -65,6 +69,10 @@ const COPY: Record<string, Copy> = {
     thinking: "Thinking…",
     error: "The answer could not be generated. Please try again in a moment.",
     disclaimer: "Automatically generated answer: an invitation to think, not a closed truth.",
+    historyTitle: "Your recent questions",
+    historyNote:
+      "Anonymous and session-only: it is cleared when you close the tab. Tap a question to continue the reflection.",
+    clear: "Clear history",
   },
 };
 
@@ -76,6 +84,22 @@ const AskSection = () => {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  useEffect(() => {
+    setHistory(loadHistory());
+  }, []);
+
+  const clearHistory = () => {
+    setHistory([]);
+    saveHistory([]);
+  };
+
+  const openEntry = (entry: HistoryEntry) => {
+    setQuestion(entry.question);
+    setAnswer(entry.answer);
+    setError(false);
+  };
 
   const ask = async () => {
     if (question.trim().length < 5 || loading) return;
@@ -115,7 +139,24 @@ const AskSection = () => {
         acc += decoder.decode(value, { stream: true });
         setAnswer(acc);
       }
-      if (!acc.trim()) setError(true);
+      if (!acc.trim()) {
+        setError(true);
+      } else {
+        const entry: HistoryEntry = {
+          id: `${Date.now()}`,
+          question: question.trim(),
+          answer: acc,
+          at: Date.now(),
+        };
+        setHistory((prev) => {
+          const next = [entry, ...prev.filter((h) => h.question !== entry.question)].slice(
+            0,
+            HISTORY_MAX,
+          );
+          saveHistory(next);
+          return next;
+        });
+      }
     } catch (e) {
       console.error(e);
       setError(true);
@@ -185,6 +226,40 @@ const AskSection = () => {
             </div>
           )}
         </div>
+
+        {history.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                <History className="h-4 w-4" />
+                {copy.historyTitle}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={clearHistory}>
+                <Trash2 className="h-4 w-4" />
+                {copy.clear}
+              </Button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">{copy.historyNote}</p>
+            <ul className="mt-4 space-y-2">
+              {history.map((entry) => (
+                <li key={entry.id}>
+                  <button
+                    type="button"
+                    onClick={() => openEntry(entry)}
+                    className="w-full rounded-xl border border-border bg-card/40 px-4 py-3 text-left transition-colors hover:border-primary/60 hover:bg-card/70"
+                  >
+                    <span className="block text-sm font-medium text-foreground/90 line-clamp-2">
+                      {entry.question}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground line-clamp-1">
+                      {entry.answer}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );
