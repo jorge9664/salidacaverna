@@ -65,6 +65,7 @@ const COPY: Record<string, Copy> = {
     historyNote:
       "Anónimo y solo en esta sesión: al cerrar la pestaña se borra. Toca una pregunta para retomar la reflexión.",
     clear: "Borrar historial",
+    suggestionsTitle: "¿Por dónde empezar?",
   },
   en: {
     tag: "Ask and reflect",
