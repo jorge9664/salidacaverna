@@ -262,6 +262,7 @@ const AskSection = () => {
 
         <div className="rounded-2xl border border-border bg-card/60 backdrop-blur p-5 md:p-7 shadow-lg">
           <Textarea
+            ref={textareaRef}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={copy.placeholder}
