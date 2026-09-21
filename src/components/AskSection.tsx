@@ -85,7 +85,66 @@ const COPY: Record<string, Copy> = {
   },
 };
 
-const AskSection = () => {
+const SUGGESTIONS: Record<string, SuggestionGroup[]> = {
+  es: [
+    {
+      label: "Educación",
+      icon: "education",
+      questions: [
+        "¿Educar es enseñar a pensar o enseñar a obedecer?",
+        "¿Qué aprender hoy que la escuela no me enseña?",
+      ],
+    },
+    {
+      label: "Libertad",
+      icon: "freedom",
+      questions: [
+        "¿Somos realmente libres o solo elegimos dentro de lo que nos muestran?",
+        "¿Puede haber libertad sin responsabilidad?",
+      ],
+    },
+    {
+      label: "Pensamiento crítico",
+      icon: "critical",
+      questions: [
+        "¿Cómo sé si una opinión es mía o me la han vendido?",
+        "¿Doubtar de todo nos acerca a la verdad o nos paraliza?",
+      ],
+    },
+  ],
+  en: [
+    {
+      label: "Education",
+      icon: "education",
+      questions: [
+        "Is education about teaching us to think, or to obey?",
+        "What should we learn today that school never teaches?",
+      ],
+    },
+    {
+      label: "Freedom",
+      icon: "freedom",
+      questions: [
+        "Are we truly free, or do we only choose among what we are shown?",
+        "Can there be freedom without responsibility?",
+      ],
+    },
+    {
+      label: "Critical thinking",
+      icon: "critical",
+      questions: [
+        "How do I know if an opinion is really mine or was sold to me?",
+        "Does doubting everything bring us closer to truth, or paralyze us?",
+      ],
+    },
+  ],
+};
+
+const SUGGESTION_ICONS = {
+  education: GraduationCap,
+  freedom: Unlock,
+  critical: Lightbulb,
+};
   const { lang } = useLang();
   const copy = COPY[lang] ?? COPY.en;
 
