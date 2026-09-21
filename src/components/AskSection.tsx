@@ -108,7 +108,7 @@ const SUGGESTIONS: Record<string, SuggestionGroup[]> = {
       icon: "critical",
       questions: [
         "¿Cómo sé si una opinión es mía o me la han vendido?",
-        "¿Doubtar de todo nos acerca a la verdad o nos paraliza?",
+        "¿Dudar de todo nos acerca a la verdad o nos paraliza?",
       ],
     },
   ],
@@ -145,6 +145,8 @@ const SUGGESTION_ICONS = {
   freedom: Unlock,
   critical: Lightbulb,
 };
+
+const AskSection = () => {
   const { lang } = useLang();
   const copy = COPY[lang] ?? COPY.en;
 
