@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Send, History, Trash2 } from "lucide-react";
+import { Loader2, Sparkles, Send, History, Trash2, GraduationCap, Unlock, Lightbulb } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
