@@ -84,6 +84,22 @@ const AskSection = () => {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  useEffect(() => {
+    setHistory(loadHistory());
+  }, []);
+
+  const clearHistory = () => {
+    setHistory([]);
+    saveHistory([]);
+  };
+
+  const openEntry = (entry: HistoryEntry) => {
+    setQuestion(entry.question);
+    setAnswer(entry.answer);
+    setError(false);
+  };
 
   const ask = async () => {
     if (question.trim().length < 5 || loading) return;
