@@ -289,6 +289,37 @@ const AskSection = () => {
             </Button>
           </div>
 
+          <div className="mt-6 border-t border-border pt-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {copy.suggestionsTitle}
+            </p>
+            <div className="mt-3 space-y-2">
+              {(SUGGESTIONS[lang] ?? SUGGESTIONS.en).map((group) => {
+                const Icon = SUGGESTION_ICONS[group.icon];
+                return (
+                  <div key={group.label} className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+                      <Icon className="h-3.5 w-3.5" />
+                      {group.label}
+                    </span>
+                    {group.questions.map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => useSuggestion(q)}
+                        disabled={loading}
+                        className="rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs text-foreground/80 transition-colors hover:border-primary/60 hover:text-foreground disabled:opacity-50"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+
           {(answer || error) && (
             <div className="mt-6 border-t border-border pt-6">
               {error && !answer ? (
