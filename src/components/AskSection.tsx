@@ -18,6 +18,13 @@ type Copy = {
   historyTitle: string;
   historyNote: string;
   clear: string;
+  suggestionsTitle: string;
+};
+
+type SuggestionGroup = {
+  label: string;
+  icon: "education" | "freedom" | "critical";
+  questions: string[];
 };
 
 type HistoryEntry = { id: string; question: string; answer: string; at: number };
