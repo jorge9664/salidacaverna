@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Send, History, Trash2 } from "lucide-react";
+import { Loader2, Sparkles, Send, History, Trash2, GraduationCap, Unlock, Lightbulb } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,13 @@ type Copy = {
   historyTitle: string;
   historyNote: string;
   clear: string;
+  suggestionsTitle: string;
+};
+
+type SuggestionGroup = {
+  label: string;
+  icon: "education" | "freedom" | "critical";
+  questions: string[];
 };
 
 type HistoryEntry = { id: string; question: string; answer: string; at: number };
@@ -58,6 +65,7 @@ const COPY: Record<string, Copy> = {
     historyNote:
       "Anónimo y solo en esta sesión: al cerrar la pestaña se borra. Toca una pregunta para retomar la reflexión.",
     clear: "Borrar historial",
+    suggestionsTitle: "¿Por dónde empezar?",
   },
   en: {
     tag: "Ask and reflect",
@@ -73,7 +81,69 @@ const COPY: Record<string, Copy> = {
     historyNote:
       "Anonymous and session-only: it is cleared when you close the tab. Tap a question to continue the reflection.",
     clear: "Clear history",
+    suggestionsTitle: "Where to start?",
   },
+};
+
+const SUGGESTIONS: Record<string, SuggestionGroup[]> = {
+  es: [
+    {
+      label: "Educación",
+      icon: "education",
+      questions: [
+        "¿Educar es enseñar a pensar o enseñar a obedecer?",
+        "¿Qué aprender hoy que la escuela no me enseña?",
+      ],
+    },
+    {
+      label: "Libertad",
+      icon: "freedom",
+      questions: [
+        "¿Somos realmente libres o solo elegimos dentro de lo que nos muestran?",
+        "¿Puede haber libertad sin responsabilidad?",
+      ],
+    },
+    {
+      label: "Pensamiento crítico",
+      icon: "critical",
+      questions: [
+        "¿Cómo sé si una opinión es mía o me la han vendido?",
+        "¿Dudar de todo nos acerca a la verdad o nos paraliza?",
+      ],
+    },
+  ],
+  en: [
+    {
+      label: "Education",
+      icon: "education",
+      questions: [
+        "Is education about teaching us to think, or to obey?",
+        "What should we learn today that school never teaches?",
+      ],
+    },
+    {
+      label: "Freedom",
+      icon: "freedom",
+      questions: [
+        "Are we truly free, or do we only choose among what we are shown?",
+        "Can there be freedom without responsibility?",
+      ],
+    },
+    {
+      label: "Critical thinking",
+      icon: "critical",
+      questions: [
+        "How do I know if an opinion is really mine or was sold to me?",
+        "Does doubting everything bring us closer to truth, or paralyze us?",
+      ],
+    },
+  ],
+};
+
+const SUGGESTION_ICONS = {
+  education: GraduationCap,
+  freedom: Unlock,
+  critical: Lightbulb,
 };
 
 const AskSection = () => {
@@ -85,6 +155,13 @@ const AskSection = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const useSuggestion = (q: string) => {
+    setQuestion(q);
+    setError(false);
+    textareaRef.current?.focus();
+  };
 
   useEffect(() => {
     setHistory(loadHistory());
@@ -185,6 +262,7 @@ const AskSection = () => {
 
         <div className="rounded-2xl border border-border bg-card/60 backdrop-blur p-5 md:p-7 shadow-lg">
           <Textarea
+            ref={textareaRef}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={copy.placeholder}
@@ -210,6 +288,37 @@ const AskSection = () => {
               )}
             </Button>
           </div>
+
+          <div className="mt-6 border-t border-border pt-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {copy.suggestionsTitle}
+            </p>
+            <div className="mt-3 space-y-2">
+              {(SUGGESTIONS[lang] ?? SUGGESTIONS.en).map((group) => {
+                const Icon = SUGGESTION_ICONS[group.icon];
+                return (
+                  <div key={group.label} className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+                      <Icon className="h-3.5 w-3.5" />
+                      {group.label}
+                    </span>
+                    {group.questions.map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => useSuggestion(q)}
+                        disabled={loading}
+                        className="rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs text-foreground/80 transition-colors hover:border-primary/60 hover:text-foreground disabled:opacity-50"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
 
           {(answer || error) && (
             <div className="mt-6 border-t border-border pt-6">
