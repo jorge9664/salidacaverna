@@ -139,7 +139,24 @@ const AskSection = () => {
         acc += decoder.decode(value, { stream: true });
         setAnswer(acc);
       }
-      if (!acc.trim()) setError(true);
+      if (!acc.trim()) {
+        setError(true);
+      } else {
+        const entry: HistoryEntry = {
+          id: `${Date.now()}`,
+          question: question.trim(),
+          answer: acc,
+          at: Date.now(),
+        };
+        setHistory((prev) => {
+          const next = [entry, ...prev.filter((h) => h.question !== entry.question)].slice(
+            0,
+            HISTORY_MAX,
+          );
+          saveHistory(next);
+          return next;
+        });
+      }
     } catch (e) {
       console.error(e);
       setError(true);
