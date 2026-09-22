@@ -1,14 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toPng } from "html-to-image";
-import { ArrowLeft, Download, Share2, Copy, Check, Quote } from "lucide-react";
+import { ArrowLeft, Download, Share2, Copy, Check, Quote, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
-
-const STORAGE_KEY = "lsdlc:share-card";
-
-type CardData = { question: string; answer: string };
+import {
+  type CardData,
+  type FavoriteCard,
+  SHARE_STORAGE_KEY,
+  addFavorite,
+  decodeShare,
+  encodeShare,
+  isFavorite,
+  loadFavorites,
+  removeFavorite,
+  saveFavorites,
+} from "@/lib/share";
 
 const COPY: Record<string, Record<string, string>> = {
   es: {
@@ -23,6 +31,13 @@ const COPY: Record<string, Record<string, string>> = {
     emptyCta: "Haz una pregunta",
     note: "Reflexión generada en La salida de la Caverna: una invitación a pensar.",
     label: "Pregunta",
+    save: "Guardar tarjeta",
+    saved: "Guardada",
+    favTitle: "Tus tarjetas guardadas",
+    favNote:
+      "Solo en esta sesión y en tu dispositivo: al cerrar la pestaña se borran. Toca una tarjeta para volver a verla.",
+    clear: "Borrar todas",
+    remove: "Quitar",
   },
   en: {
     back: "Back",
@@ -36,25 +51,15 @@ const COPY: Record<string, Record<string, string>> = {
     emptyCta: "Ask a question",
     note: "Reflection created at La salida de la Caverna: an invitation to think.",
     label: "Question",
+    save: "Save card",
+    saved: "Saved",
+    favTitle: "Your saved cards",
+    favNote:
+      "Session-only and on your device: they are cleared when you close the tab. Tap a card to view it again.",
+    clear: "Clear all",
+    remove: "Remove",
   },
 };
-
-const decode = (value: string): CardData | null => {
-  try {
-    const json = decodeURIComponent(escape(window.atob(value.replace(/-/g, "+").replace(/_/g, "/"))));
-    const parsed = JSON.parse(json);
-    if (parsed?.question && parsed?.answer) return parsed as CardData;
-  } catch {
-    /* invalid payload */
-  }
-  return null;
-};
-
-export const encodeShare = (data: CardData) =>
-  window
-    .btoa(unescape(encodeURIComponent(JSON.stringify(data))))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
 
 const ShareCard = () => {
   const { lang } = useLang();
@@ -64,19 +69,30 @@ const ShareCard = () => {
   const [data, setData] = useState<CardData | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [favorites, setFavorites] = useState<FavoriteCard[]>([]);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setFavorites(loadFavorites());
+  }, []);
 
   useEffect(() => {
     const d = params.get("d");
     if (d) {
-      const decoded = decode(d);
+      const decoded = decodeShare(d);
       if (decoded) {
         setData(decoded);
+        setSaved(isFavorite(decoded));
         return;
       }
     }
     try {
-      const raw = window.sessionStorage.getItem(STORAGE_KEY);
-      if (raw) setData(JSON.parse(raw) as CardData);
+      const raw = window.sessionStorage.getItem(SHARE_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as CardData;
+        setData(parsed);
+        setSaved(isFavorite(parsed));
+      }
     } catch {
       /* ignore */
     }
@@ -135,6 +151,36 @@ const ShareCard = () => {
     await navigator.clipboard.writeText(`${data.question}\n\n${data.answer}\n\n${copy.note}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const toggleSave = () => {
+    if (!data) return;
+    if (saved) {
+      const existing = loadFavorites().find((f) => f.question === data.question);
+      if (existing) setFavorites(removeFavorite(existing.id));
+      setSaved(false);
+    } else {
+      setFavorites(addFavorite(data));
+      setSaved(true);
+    }
+  };
+
+  const openFavorite = (fav: FavoriteCard) => {
+    const next = { question: fav.question, answer: fav.answer };
+    setData(next);
+    setSaved(true);
+    try {
+      window.sessionStorage.setItem(SHARE_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const clearFavorites = () => {
+    saveFavorites([]);
+    setFavorites([]);
+    setSaved(false);
   };
 
   return (
@@ -198,6 +244,10 @@ const ShareCard = () => {
                 <Share2 className="h-4 w-4" />
                 {copy.share}
               </Button>
+              <Button variant={saved ? "default" : "outline"} onClick={toggleSave}>
+                <Star className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
+                {saved ? copy.saved : copy.save}
+              </Button>
               <Button variant="ghost" onClick={copyText}>
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 {copied ? copy.copied : copy.copy}
@@ -205,6 +255,62 @@ const ShareCard = () => {
             </div>
             <p className="mt-4 text-xs text-muted-foreground">{copy.note}</p>
           </>
+        )}
+
+        {favorites.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                <Star className="h-4 w-4" />
+                {copy.favTitle}
+              </h2>
+              <Button variant="ghost" size="sm" onClick={clearFavorites}>
+                <Trash2 className="h-4 w-4" />
+                {copy.clear}
+              </Button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">{copy.favNote}</p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {favorites.map((fav) => (
+                <li
+                  key={fav.id}
+                  className="rounded-xl border border-border bg-card/40 p-4 transition-colors hover:border-primary/60"
+                >
+                  <button
+                    type="button"
+                    onClick={() => openFavorite(fav)}
+                    className="w-full text-left"
+                  >
+                    <span className="block text-sm font-medium text-foreground/90 line-clamp-2">
+                      {fav.question}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground line-clamp-2">
+                      {fav.answer}
+                    </span>
+                  </button>
+                  <div className="mt-3 flex items-center gap-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/tarjeta?d=${encodeShare({ question: fav.question, answer: fav.answer })}`}>
+                        <Share2 className="h-3.5 w-3.5" />
+                        {copy.share}
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFavorites(removeFavorite(fav.id));
+                        if (data?.question === fav.question) setSaved(false);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {copy.remove}
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
       </div>
     </main>
