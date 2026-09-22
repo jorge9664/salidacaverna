@@ -19,6 +19,7 @@ import AdminMedia from "./pages/admin/AdminMedia.tsx";
 import AdminAnalytics from "./pages/admin/AdminAnalytics.tsx";
 import Articles from "./pages/Articles.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
+import ShareCard from "./pages/ShareCard.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/articulos" element={<Articles />} />
             <Route path="/articulos/:slug" element={<ArticleDetail />} />
+            <Route path="/tarjeta" element={<ShareCard />} />
             <Route
               path="/admin"
               element={

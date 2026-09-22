@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Send, History, Trash2, GraduationCap, Unlock, Lightbulb } from "lucide-react";
+import { Loader2, Sparkles, Send, History, Trash2, GraduationCap, Unlock, Lightbulb, Share2, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  SHARE_STORAGE_KEY,
+  addFavorite,
+  encodeShare,
+  isFavorite,
+  loadFavorites,
+  removeFavorite,
+} from "@/lib/share";
 
 type Copy = {
   tag: string;
