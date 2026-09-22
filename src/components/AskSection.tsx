@@ -7,10 +7,10 @@ import { useLang } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  type FavoriteCard,
   SHARE_STORAGE_KEY,
   addFavorite,
   encodeShare,
-  isFavorite,
   loadFavorites,
   removeFavorite,
 } from "@/lib/share";
