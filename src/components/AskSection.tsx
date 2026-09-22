@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Send, History, Trash2, GraduationCap, Unlock, Lightbulb } from "lucide-react";
+import { Loader2, Sparkles, Send, History, Trash2, GraduationCap, Unlock, Lightbulb, Share2, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  type FavoriteCard,
+  SHARE_STORAGE_KEY,
+  addFavorite,
+  encodeShare,
+  loadFavorites,
+  removeFavorite,
+} from "@/lib/share";
 
 type Copy = {
   tag: string;
@@ -19,6 +28,12 @@ type Copy = {
   historyNote: string;
   clear: string;
   suggestionsTitle: string;
+  share: string;
+  save: string;
+  saved: string;
+  favTitle: string;
+  favNote: string;
+  openCard: string;
 };
 
 type SuggestionGroup = {
@@ -66,6 +81,13 @@ const COPY: Record<string, Copy> = {
       "Anónimo y solo en esta sesión: al cerrar la pestaña se borra. Toca una pregunta para retomar la reflexión.",
     clear: "Borrar historial",
     suggestionsTitle: "¿Por dónde empezar?",
+    share: "Compartir tarjeta",
+    save: "Guardar en favoritas",
+    saved: "Guardada",
+    favTitle: "Tus tarjetas favoritas",
+    favNote:
+      "Guardadas solo en esta sesión y en tu dispositivo. Ábrelas para volver a verlas o compartirlas.",
+    openCard: "Ver tarjeta",
   },
   en: {
     tag: "Ask and reflect",
@@ -82,6 +104,13 @@ const COPY: Record<string, Copy> = {
       "Anonymous and session-only: it is cleared when you close the tab. Tap a question to continue the reflection.",
     clear: "Clear history",
     suggestionsTitle: "Where to start?",
+    share: "Share card",
+    save: "Save to favourites",
+    saved: "Saved",
+    favTitle: "Your favourite cards",
+    favNote:
+      "Saved only in this session and on your device. Open them to view or share them again.",
+    openCard: "View card",
   },
 };
 
@@ -155,7 +184,35 @@ const AskSection = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteCard[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const currentCard = { question: question.trim(), answer };
+  const currentSaved = favorites.some((f) => f.question === currentCard.question);
+
+  const rememberCard = () => {
+    try {
+      window.sessionStorage.setItem(SHARE_STORAGE_KEY, JSON.stringify(currentCard));
+    } catch {
+      /* sessionStorage unavailable */
+    }
+  };
+
+  const toggleFavorite = () => {
+    if (!currentCard.question || !currentCard.answer) return;
+    if (currentSaved) {
+      const existing = favorites.find((f) => f.question === currentCard.question);
+      if (existing) setFavorites(removeFavorite(existing.id));
+    } else {
+      setFavorites(addFavorite(currentCard));
+    }
+  };
+
+  const openFavorite = (fav: FavoriteCard) => {
+    setQuestion(fav.question);
+    setAnswer(fav.answer);
+    setError(false);
+  };
 
   const useSuggestion = (q: string) => {
     setQuestion(q);
@@ -165,6 +222,7 @@ const AskSection = () => {
 
   useEffect(() => {
     setHistory(loadHistory());
+    setFavorites(loadFavorites());
   }, []);
 
   const clearHistory = () => {
@@ -329,6 +387,24 @@ const AskSection = () => {
                   <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
                     {answer}
                   </p>
+                  {!loading && answer && (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Button asChild variant="secondary" size="sm" onClick={rememberCard}>
+                        <Link to={`/tarjeta?d=${encodeShare(currentCard)}`}>
+                          <Share2 className="h-4 w-4" />
+                          {copy.share}
+                        </Link>
+                      </Button>
+                      <Button
+                        variant={currentSaved ? "default" : "outline"}
+                        size="sm"
+                        onClick={toggleFavorite}
+                      >
+                        <Star className={`h-4 w-4 ${currentSaved ? "fill-current" : ""}`} />
+                        {currentSaved ? copy.saved : copy.save}
+                      </Button>
+                    </div>
+                  )}
                   <p className="mt-4 text-xs text-muted-foreground">{copy.disclaimer}</p>
                 </>
               )}
@@ -364,6 +440,54 @@ const AskSection = () => {
                       {entry.answer}
                     </span>
                   </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {favorites.length > 0 && (
+          <div className="mt-10">
+            <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              <Star className="h-4 w-4" />
+              {copy.favTitle}
+            </h3>
+            <p className="mt-2 text-xs text-muted-foreground">{copy.favNote}</p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {favorites.map((fav) => (
+                <li
+                  key={fav.id}
+                  className="rounded-xl border border-border bg-card/40 p-4 transition-colors hover:border-primary/60"
+                >
+                  <button
+                    type="button"
+                    onClick={() => openFavorite(fav)}
+                    className="w-full text-left"
+                  >
+                    <span className="block text-sm font-medium text-foreground/90 line-clamp-2">
+                      {fav.question}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted-foreground line-clamp-2">
+                      {fav.answer}
+                    </span>
+                  </button>
+                  <div className="mt-3 flex items-center gap-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link
+                        to={`/tarjeta?d=${encodeShare({ question: fav.question, answer: fav.answer })}`}
+                      >
+                        <Share2 className="h-3.5 w-3.5" />
+                        {copy.openCard}
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setFavorites(removeFavorite(fav.id))}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </li>
               ))}
             </ul>
