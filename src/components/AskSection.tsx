@@ -28,6 +28,12 @@ type Copy = {
   historyNote: string;
   clear: string;
   suggestionsTitle: string;
+  share: string;
+  save: string;
+  saved: string;
+  favTitle: string;
+  favNote: string;
+  openCard: string;
 };
 
 type SuggestionGroup = {
@@ -75,6 +81,13 @@ const COPY: Record<string, Copy> = {
       "Anónimo y solo en esta sesión: al cerrar la pestaña se borra. Toca una pregunta para retomar la reflexión.",
     clear: "Borrar historial",
     suggestionsTitle: "¿Por dónde empezar?",
+    share: "Compartir tarjeta",
+    save: "Guardar en favoritas",
+    saved: "Guardada",
+    favTitle: "Tus tarjetas favoritas",
+    favNote:
+      "Guardadas solo en esta sesión y en tu dispositivo. Ábrelas para volver a verlas o compartirlas.",
+    openCard: "Ver tarjeta",
   },
   en: {
     tag: "Ask and reflect",
@@ -91,6 +104,13 @@ const COPY: Record<string, Copy> = {
       "Anonymous and session-only: it is cleared when you close the tab. Tap a question to continue the reflection.",
     clear: "Clear history",
     suggestionsTitle: "Where to start?",
+    share: "Share card",
+    save: "Save to favourites",
+    saved: "Saved",
+    favTitle: "Your favourite cards",
+    favNote:
+      "Saved only in this session and on your device. Open them to view or share them again.",
+    openCard: "View card",
   },
 };
 
