@@ -222,6 +222,7 @@ const AskSection = () => {
 
   useEffect(() => {
     setHistory(loadHistory());
+    setFavorites(loadFavorites());
   }, []);
 
   const clearHistory = () => {
