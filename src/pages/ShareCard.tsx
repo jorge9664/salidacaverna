@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toPng } from "html-to-image";
-import { ArrowLeft, Download, Share2, Copy, Check, Quote, Star, Trash2 } from "lucide-react";
+import { jsPDF } from "jspdf";
+import { ArrowLeft, Download, FileDown, Images, Share2, Copy, Check, Quote, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
@@ -38,6 +39,9 @@ const COPY: Record<string, Record<string, string>> = {
       "Solo en esta sesión y en tu dispositivo: al cerrar la pestaña se borran. Toca una tarjeta para volver a verla.",
     clear: "Borrar todas",
     remove: "Quitar",
+    downloadAllImages: "Descargar todas (imágenes)",
+    downloadPdf: "Descargar PDF",
+    exporting: "Preparando…",
   },
   en: {
     back: "Back",
@@ -58,6 +62,9 @@ const COPY: Record<string, Record<string, string>> = {
       "Session-only and on your device: they are cleared when you close the tab. Tap a card to view it again.",
     clear: "Clear all",
     remove: "Remove",
+    downloadAllImages: "Download all (images)",
+    downloadPdf: "Download PDF",
+    exporting: "Preparing…",
   },
 };
 
