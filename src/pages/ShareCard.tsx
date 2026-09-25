@@ -417,6 +417,24 @@ const ShareCard = () => {
             </ul>
           </section>
         )}
+
+        {/* Renderizado oculto de las favoritas para exportarlas como imagen/PDF */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed -left-[10000px] top-0 w-[640px]"
+        >
+          {favorites.map((fav) => (
+            <CardView
+              key={fav.id}
+              data={{ question: fav.question, answer: fav.answer }}
+              label={copy.label}
+              innerRef={(node) => {
+                if (node) offscreenRefs.current.set(fav.id, node);
+                else offscreenRefs.current.delete(fav.id);
+              }}
+            />
+          ))}
+        </div>
       </div>
     </main>
   );
