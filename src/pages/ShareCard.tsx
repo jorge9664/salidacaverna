@@ -232,6 +232,62 @@ const ShareCard = () => {
     setSaved(false);
   };
 
+  const renderFavorite = async (fav: FavoriteCard) => {
+    const node = offscreenRefs.current.get(fav.id);
+    if (!node) return null;
+    return toPng(node, { cacheBust: true, pixelRatio: 2 });
+  };
+
+  const downloadAllImages = async () => {
+    setExporting(true);
+    try {
+      for (const fav of favorites) {
+        const url = await renderFavorite(fav);
+        if (!url) continue;
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `salida-de-la-caverna-${fav.id}.png`;
+        a.click();
+        await new Promise((r) => setTimeout(r, 300));
+      }
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const downloadPdf = async () => {
+    setExporting(true);
+    try {
+      const doc = new jsPDF({ unit: "px", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      let hasPage = false;
+      for (const fav of favorites) {
+        const url = await renderFavorite(fav);
+        if (!url) continue;
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const el = new Image();
+          el.onload = () => resolve(el);
+          el.onerror = reject;
+          el.src = url;
+        });
+        const margin = 24;
+        const scale = Math.min(
+          (pageW - margin * 2) / img.width,
+          (pageH - margin * 2) / img.height,
+        );
+        const w = img.width * scale;
+        const h = img.height * scale;
+        if (hasPage) doc.addPage();
+        hasPage = true;
+        doc.addImage(url, "PNG", (pageW - w) / 2, (pageH - h) / 2, w, h);
+      }
+      if (hasPage) doc.save("salida-de-la-caverna-tarjetas.pdf");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="container mx-auto max-w-2xl px-4">
