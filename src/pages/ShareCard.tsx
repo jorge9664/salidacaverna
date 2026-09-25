@@ -68,14 +68,56 @@ const COPY: Record<string, Record<string, string>> = {
   },
 };
 
+const CardView = ({
+  data,
+  label,
+  innerRef,
+}: {
+  data: CardData;
+  label: string;
+  innerRef?: (node: HTMLDivElement | null) => void;
+}) => (
+  <div
+    ref={innerRef}
+    className="overflow-hidden rounded-2xl border border-primary/20 bg-[hsl(var(--card))] p-8 shadow-2xl"
+  >
+    <div className="flex items-center gap-3">
+      <img src={logo} alt="" className="h-10 w-10 object-contain" />
+      <span className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+        La salida de la Caverna
+      </span>
+    </div>
+
+    <div className="mt-7">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">
+        {data.question}
+      </p>
+    </div>
+
+    <div className="mt-6 border-l-2 border-primary/60 pl-4">
+      <Quote className="h-4 w-4 text-primary" />
+      <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">
+        {data.answer}
+      </p>
+    </div>
+
+    <p className="mt-8 text-xs text-muted-foreground">salidacaverna.es</p>
+  </div>
+);
+
 const ShareCard = () => {
   const { lang } = useLang();
   const copy = COPY[lang] ?? COPY.en;
   const [params] = useSearchParams();
   const cardRef = useRef<HTMLDivElement>(null);
+  const offscreenRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [data, setData] = useState<CardData | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteCard[]>([]);
   const [saved, setSaved] = useState(false);
 
