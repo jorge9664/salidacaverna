@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toPng } from "html-to-image";
-import { ArrowLeft, Download, Share2, Copy, Check, Quote, Star, Trash2 } from "lucide-react";
+import { jsPDF } from "jspdf";
+import { ArrowLeft, Download, FileDown, Images, Share2, Copy, Check, Quote, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
@@ -38,6 +39,9 @@ const COPY: Record<string, Record<string, string>> = {
       "Solo en esta sesión y en tu dispositivo: al cerrar la pestaña se borran. Toca una tarjeta para volver a verla.",
     clear: "Borrar todas",
     remove: "Quitar",
+    downloadAllImages: "Descargar todas (imágenes)",
+    downloadPdf: "Descargar PDF",
+    exporting: "Preparando…",
   },
   en: {
     back: "Back",
@@ -58,17 +62,62 @@ const COPY: Record<string, Record<string, string>> = {
       "Session-only and on your device: they are cleared when you close the tab. Tap a card to view it again.",
     clear: "Clear all",
     remove: "Remove",
+    downloadAllImages: "Download all (images)",
+    downloadPdf: "Download PDF",
+    exporting: "Preparing…",
   },
 };
+
+const CardView = ({
+  data,
+  label,
+  innerRef,
+}: {
+  data: CardData;
+  label: string;
+  innerRef?: (node: HTMLDivElement | null) => void;
+}) => (
+  <div
+    ref={innerRef}
+    className="overflow-hidden rounded-2xl border border-primary/20 bg-[hsl(var(--card))] p-8 shadow-2xl"
+  >
+    <div className="flex items-center gap-3">
+      <img src={logo} alt="" className="h-10 w-10 object-contain" />
+      <span className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+        La salida de la Caverna
+      </span>
+    </div>
+
+    <div className="mt-7">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">
+        {data.question}
+      </p>
+    </div>
+
+    <div className="mt-6 border-l-2 border-primary/60 pl-4">
+      <Quote className="h-4 w-4 text-primary" />
+      <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">
+        {data.answer}
+      </p>
+    </div>
+
+    <p className="mt-8 text-xs text-muted-foreground">salidacaverna.es</p>
+  </div>
+);
 
 const ShareCard = () => {
   const { lang } = useLang();
   const copy = COPY[lang] ?? COPY.en;
   const [params] = useSearchParams();
   const cardRef = useRef<HTMLDivElement>(null);
+  const offscreenRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [data, setData] = useState<CardData | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteCard[]>([]);
   const [saved, setSaved] = useState(false);
 
@@ -183,6 +232,62 @@ const ShareCard = () => {
     setSaved(false);
   };
 
+  const renderFavorite = async (fav: FavoriteCard) => {
+    const node = offscreenRefs.current.get(fav.id);
+    if (!node) return null;
+    return toPng(node, { cacheBust: true, pixelRatio: 2 });
+  };
+
+  const downloadAllImages = async () => {
+    setExporting(true);
+    try {
+      for (const fav of favorites) {
+        const url = await renderFavorite(fav);
+        if (!url) continue;
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `salida-de-la-caverna-${fav.id}.png`;
+        a.click();
+        await new Promise((r) => setTimeout(r, 300));
+      }
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const downloadPdf = async () => {
+    setExporting(true);
+    try {
+      const doc = new jsPDF({ unit: "px", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      let hasPage = false;
+      for (const fav of favorites) {
+        const url = await renderFavorite(fav);
+        if (!url) continue;
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const el = new Image();
+          el.onload = () => resolve(el);
+          el.onerror = reject;
+          el.src = url;
+        });
+        const margin = 24;
+        const scale = Math.min(
+          (pageW - margin * 2) / img.width,
+          (pageH - margin * 2) / img.height,
+        );
+        const w = img.width * scale;
+        const h = img.height * scale;
+        if (hasPage) doc.addPage();
+        hasPage = true;
+        doc.addImage(url, "PNG", (pageW - w) / 2, (pageH - h) / 2, w, h);
+      }
+      if (hasPage) doc.save("salida-de-la-caverna-tarjetas.pdf");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="container mx-auto max-w-2xl px-4">
@@ -205,34 +310,14 @@ const ShareCard = () => {
           </div>
         ) : (
           <>
-            <div
-              ref={cardRef}
-              className="mt-10 overflow-hidden rounded-2xl border border-primary/20 bg-[hsl(var(--card))] p-8 shadow-2xl"
-            >
-              <div className="flex items-center gap-3">
-                <img src={logo} alt="" className="h-10 w-10 object-contain" />
-                <span className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
-                  La salida de la Caverna
-                </span>
-              </div>
-
-              <div className="mt-7">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {copy.label}
-                </p>
-                <p className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">
-                  {data.question}
-                </p>
-              </div>
-
-              <div className="mt-6 border-l-2 border-primary/60 pl-4">
-                <Quote className="h-4 w-4 text-primary" />
-                <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">
-                  {data.answer}
-                </p>
-              </div>
-
-              <p className="mt-8 text-xs text-muted-foreground">salidacaverna.es</p>
+            <div className="mt-10">
+              <CardView
+                data={data}
+                label={copy.label}
+                innerRef={(node) => {
+                  cardRef.current = node;
+                }}
+              />
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -264,10 +349,30 @@ const ShareCard = () => {
                 <Star className="h-4 w-4" />
                 {copy.favTitle}
               </h2>
-              <Button variant="ghost" size="sm" onClick={clearFavorites}>
-                <Trash2 className="h-4 w-4" />
-                {copy.clear}
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadAllImages}
+                  disabled={exporting}
+                >
+                  <Images className="h-4 w-4" />
+                  {exporting ? copy.exporting : copy.downloadAllImages}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadPdf}
+                  disabled={exporting}
+                >
+                  <FileDown className="h-4 w-4" />
+                  {exporting ? copy.exporting : copy.downloadPdf}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={clearFavorites} disabled={exporting}>
+                  <Trash2 className="h-4 w-4" />
+                  {copy.clear}
+                </Button>
+              </div>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">{copy.favNote}</p>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -312,6 +417,24 @@ const ShareCard = () => {
             </ul>
           </section>
         )}
+
+        {/* Renderizado oculto de las favoritas para exportarlas como imagen/PDF */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed -left-[10000px] top-0 w-[640px]"
+        >
+          {favorites.map((fav) => (
+            <CardView
+              key={fav.id}
+              data={{ question: fav.question, answer: fav.answer }}
+              label={copy.label}
+              innerRef={(node) => {
+                if (node) offscreenRefs.current.set(fav.id, node);
+                else offscreenRefs.current.delete(fav.id);
+              }}
+            />
+          ))}
+        </div>
       </div>
     </main>
   );
