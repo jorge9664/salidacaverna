@@ -310,34 +310,14 @@ const ShareCard = () => {
           </div>
         ) : (
           <>
-            <div
-              ref={cardRef}
-              className="mt-10 overflow-hidden rounded-2xl border border-primary/20 bg-[hsl(var(--card))] p-8 shadow-2xl"
-            >
-              <div className="flex items-center gap-3">
-                <img src={logo} alt="" className="h-10 w-10 object-contain" />
-                <span className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
-                  La salida de la Caverna
-                </span>
-              </div>
-
-              <div className="mt-7">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {copy.label}
-                </p>
-                <p className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">
-                  {data.question}
-                </p>
-              </div>
-
-              <div className="mt-6 border-l-2 border-primary/60 pl-4">
-                <Quote className="h-4 w-4 text-primary" />
-                <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">
-                  {data.answer}
-                </p>
-              </div>
-
-              <p className="mt-8 text-xs text-muted-foreground">salidacaverna.es</p>
+            <div className="mt-10">
+              <CardView
+                data={data}
+                label={copy.label}
+                innerRef={(node) => {
+                  cardRef.current = node;
+                }}
+              />
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -369,10 +349,30 @@ const ShareCard = () => {
                 <Star className="h-4 w-4" />
                 {copy.favTitle}
               </h2>
-              <Button variant="ghost" size="sm" onClick={clearFavorites}>
-                <Trash2 className="h-4 w-4" />
-                {copy.clear}
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadAllImages}
+                  disabled={exporting}
+                >
+                  <Images className="h-4 w-4" />
+                  {exporting ? copy.exporting : copy.downloadAllImages}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadPdf}
+                  disabled={exporting}
+                >
+                  <FileDown className="h-4 w-4" />
+                  {exporting ? copy.exporting : copy.downloadPdf}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={clearFavorites} disabled={exporting}>
+                  <Trash2 className="h-4 w-4" />
+                  {copy.clear}
+                </Button>
+              </div>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">{copy.favNote}</p>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
