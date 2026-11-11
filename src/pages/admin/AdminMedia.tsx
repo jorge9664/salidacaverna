@@ -29,15 +29,15 @@ const AdminMedia = () => {
       setFiles([]);
     } else {
       const list = (data ?? []).filter((f) => !f.name.startsWith("."));
-      const mapped: MediaFile[] = list.map((f) => {
-        const { data: pub } = supabase.storage.from("media").getPublicUrl(f.name);
-        return {
-          name: f.name,
-          url: pub.publicUrl,
-          created_at: f.created_at ?? null,
-          size: (f.metadata as any)?.size ?? 0,
-        };
-      });
+      const { data: signed } = list.length
+        ? await supabase.storage.from("media").createSignedUrls(list.map((f) => f.name), 3600)
+        : { data: [] as { signedUrl: string }[] };
+      const mapped: MediaFile[] = list.map((f, i) => ({
+        name: f.name,
+        url: signed?.[i]?.signedUrl ?? "",
+        created_at: f.created_at ?? null,
+        size: (f.metadata as any)?.size ?? 0,
+      }));
       setFiles(mapped);
     }
     setLoading(false);
