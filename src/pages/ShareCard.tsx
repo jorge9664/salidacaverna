@@ -42,6 +42,9 @@ const COPY: Record<string, Record<string, string>> = {
     downloadAllImages: "Descargar todas (imágenes)",
     downloadPdf: "Descargar PDF",
     exporting: "Preparando…",
+    customize: "Personaliza tu tarjeta",
+    accent: "Color de acento",
+    visualStyle: "Estilo visual",
   },
   en: {
     back: "Back",
@@ -65,7 +68,42 @@ const COPY: Record<string, Record<string, string>> = {
     downloadAllImages: "Download all (images)",
     downloadPdf: "Download PDF",
     exporting: "Preparing…",
+    customize: "Customize your card",
+    accent: "Accent color",
+    visualStyle: "Visual style",
   },
+};
+
+type AccentKey = "orange" | "amber" | "sky" | "emerald" | "rose";
+type VisualStyleKey = "cinematic" | "minimal" | "light";
+
+const ACCENTS: { key: AccentKey; es: string; en: string }[] = [
+  { key: "orange", es: "Naranja", en: "Orange" },
+  { key: "amber", es: "Ámbar", en: "Amber" },
+  { key: "sky", es: "Azul", en: "Blue" },
+  { key: "emerald", es: "Esmeralda", en: "Emerald" },
+  { key: "rose", es: "Rosa", en: "Rose" },
+];
+
+const VISUAL_STYLES: { key: VisualStyleKey; es: string; en: string }[] = [
+  { key: "cinematic", es: "Cinemático", en: "Cinematic" },
+  { key: "minimal", es: "Minimalista", en: "Minimal" },
+  { key: "light", es: "Claro", en: "Light" },
+];
+
+// Clases completas para que Tailwind conserve todos los estilos en la compilación.
+const ACCENT_CLASSES: Record<AccentKey, string> = {
+  orange: "share-accent-orange",
+  amber: "share-accent-amber",
+  sky: "share-accent-sky",
+  emerald: "share-accent-emerald",
+  rose: "share-accent-rose",
+};
+
+const VISUAL_STYLE_CLASSES: Record<VisualStyleKey, string> = {
+  cinematic: "share-card-style-cinematic",
+  minimal: "share-card-style-minimal",
+  light: "share-card-style-light",
 };
 
 type FormatKey = "post" | "portrait" | "story";
@@ -77,17 +115,21 @@ const FORMATS: Record<FormatKey, { w: number; h: number; es: string; en: string 
 
 const FormatFrame = ({
   format,
+  accent,
+  visualStyle,
   children,
   innerRef,
 }: {
   format: FormatKey;
+  accent: AccentKey;
+  visualStyle: VisualStyleKey;
   children: React.ReactNode;
   innerRef?: (node: HTMLDivElement | null) => void;
 }) => (
   <div
     ref={innerRef}
     style={{ width: FORMATS[format].w, height: FORMATS[format].h }}
-    className="flex items-center justify-center overflow-hidden bg-background p-8"
+    className={`share-card-frame ${VISUAL_STYLE_CLASSES[visualStyle]} ${ACCENT_CLASSES[accent]} flex items-center justify-center overflow-hidden p-8`}
   >
     <div className="w-full">{children}</div>
   </div>
@@ -96,40 +138,44 @@ const FormatFrame = ({
 const CardView = ({
   data,
   label,
+  accent,
+  visualStyle,
   innerRef,
 }: {
   data: CardData;
   label: string;
+  accent: AccentKey;
+  visualStyle: VisualStyleKey;
   innerRef?: (node: HTMLDivElement | null) => void;
 }) => (
   <div
     ref={innerRef}
-    className="overflow-hidden rounded-2xl border border-primary/20 bg-[hsl(var(--card))] p-8 shadow-2xl"
+    className={`share-card ${VISUAL_STYLE_CLASSES[visualStyle]} ${ACCENT_CLASSES[accent]} p-8`}
   >
     <div className="flex items-center gap-3">
       <img src={logo} alt="" className="h-10 w-10 object-contain" />
-      <span className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+      <span className="share-card-brand text-sm font-semibold uppercase tracking-[0.2em]">
         La salida de la Caverna
       </span>
     </div>
 
     <div className="mt-7">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="share-card-label text-xs font-semibold uppercase tracking-wide">
         {label}
       </p>
-      <p className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">
+      <p className="share-card-question mt-2 text-xl md:text-2xl font-bold leading-snug">
         {data.question}
       </p>
     </div>
 
-    <div className="mt-6 border-l-2 border-primary/60 pl-4">
-      <Quote className="h-4 w-4 text-primary" />
-      <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">
+    <div className="share-card-quote mt-6 pl-4">
+      <Quote className="share-card-accent h-4 w-4" />
+      <p className="share-card-answer mt-2 whitespace-pre-wrap text-[15px] leading-relaxed">
         {data.answer}
       </p>
     </div>
 
-    <p className="mt-8 text-xs text-muted-foreground">salidacaverna.es</p>
+    <p className="share-card-url mt-8 text-xs">salidacaverna.es</p>
   </div>
 );
 
@@ -146,6 +192,8 @@ const ShareCard = () => {
   const [favorites, setFavorites] = useState<FavoriteCard[]>([]);
   const [saved, setSaved] = useState(false);
   const [format, setFormat] = useState<FormatKey>("story");
+  const [accent, setAccent] = useState<AccentKey>("orange");
+  const [visualStyle, setVisualStyle] = useState<VisualStyleKey>("cinematic");
   const exportRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -341,6 +389,8 @@ const ShareCard = () => {
               <CardView
                 data={data}
                 label={copy.label}
+                accent={accent}
+                visualStyle={visualStyle}
                 innerRef={(node) => {
                   cardRef.current = node;
                 }}
@@ -364,6 +414,52 @@ const ShareCard = () => {
                 ))}
               </div>
             </div>
+
+            <section className="mt-6 rounded-2xl border border-border bg-card/40 p-5" aria-label={copy.customize}>
+              <h2 className="text-sm font-semibold">{copy.customize}</h2>
+              <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {copy.accent}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {ACCENTS.map((item) => (
+                    <Button
+                      key={item.key}
+                      type="button"
+                      size="sm"
+                      variant={accent === item.key ? "default" : "outline"}
+                      aria-pressed={accent === item.key}
+                      onClick={() => setAccent(item.key)}
+                    >
+                      <span
+                        aria-hidden
+                        className={`share-swatch ${ACCENT_CLASSES[item.key]} h-3 w-3 rounded-full`}
+                      />
+                      {lang === "es" ? item.es : item.en}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {copy.visualStyle}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {VISUAL_STYLES.map((item) => (
+                    <Button
+                      key={item.key}
+                      type="button"
+                      size="sm"
+                      variant={visualStyle === item.key ? "default" : "outline"}
+                      aria-pressed={visualStyle === item.key}
+                      onClick={() => setVisualStyle(item.key)}
+                    >
+                      {lang === "es" ? item.es : item.en}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </section>
 
             <div className="mt-6 flex flex-wrap gap-3">
               <Button onClick={download} disabled={busy}>
@@ -469,20 +565,32 @@ const ShareCard = () => {
           className="pointer-events-none fixed -left-[10000px] top-0"
         >
           {data && (
-            <FormatFrame format={format} innerRef={(n) => { exportRef.current = n; }}>
-              <CardView data={data} label={copy.label} />
+            <FormatFrame
+              format={format}
+              accent={accent}
+              visualStyle={visualStyle}
+              innerRef={(n) => { exportRef.current = n; }}
+            >
+              <CardView data={data} label={copy.label} accent={accent} visualStyle={visualStyle} />
             </FormatFrame>
           )}
           {favorites.map((fav) => (
             <FormatFrame
               key={fav.id}
               format={format}
+              accent={accent}
+              visualStyle={visualStyle}
               innerRef={(node) => {
                 if (node) offscreenRefs.current.set(fav.id, node);
                 else offscreenRefs.current.delete(fav.id);
               }}
             >
-              <CardView data={{ question: fav.question, answer: fav.answer }} label={copy.label} />
+              <CardView
+                data={{ question: fav.question, answer: fav.answer }}
+                label={copy.label}
+                accent={accent}
+                visualStyle={visualStyle}
+              />
             </FormatFrame>
           ))}
         </div>

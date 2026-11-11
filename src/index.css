@@ -90,3 +90,78 @@
     box-shadow: 0 12px 40px hsl(0 0% 0% / 0.5);
   }
 }
+
+@layer components {
+  .share-accent-orange { --share-accent: 24 95% 53%; }
+  .share-accent-amber { --share-accent: 42 96% 55%; }
+  .share-accent-sky { --share-accent: 199 89% 55%; }
+  .share-accent-emerald { --share-accent: 158 64% 45%; }
+  .share-accent-rose { --share-accent: 347 77% 60%; }
+
+  .share-swatch {
+    background: hsl(var(--share-accent));
+  }
+
+  .share-card-frame {
+    background: hsl(var(--share-frame-bg));
+  }
+
+  .share-card {
+    overflow: hidden;
+    border: 1px solid hsl(var(--share-accent) / 0.35);
+    border-radius: 1rem;
+    background: var(--share-card-background);
+    color: hsl(var(--share-card-fg));
+    box-shadow: var(--share-card-shadow);
+  }
+
+  .share-card-style-cinematic {
+    --share-frame-bg: 0 0% 5%;
+    --share-card-fg: 0 0% 95%;
+    --share-card-muted: 0 0% 62%;
+    --share-card-background:
+      radial-gradient(circle at 100% 0%, hsl(var(--share-accent) / 0.16), transparent 42%),
+      linear-gradient(145deg, hsl(0 0% 11%), hsl(0 0% 6%));
+    --share-card-shadow: 0 24px 70px hsl(0 0% 0% / 0.45);
+  }
+
+  .share-card-style-minimal {
+    --share-frame-bg: 0 0% 7%;
+    --share-card-fg: 0 0% 94%;
+    --share-card-muted: 0 0% 58%;
+    --share-card-background: hsl(0 0% 7%);
+    --share-card-shadow: none;
+    border-color: hsl(0 0% 100% / 0.14);
+    border-radius: 0;
+  }
+
+  .share-card-style-light {
+    --share-frame-bg: 40 20% 92%;
+    --share-card-fg: 0 0% 10%;
+    --share-card-muted: 0 0% 38%;
+    --share-card-background: hsl(0 0% 100%);
+    --share-card-shadow: 0 24px 60px hsl(0 0% 10% / 0.16);
+  }
+
+  .share-card-brand,
+  .share-card-accent {
+    color: hsl(var(--share-accent));
+  }
+
+  .share-card-label,
+  .share-card-url {
+    color: hsl(var(--share-card-muted));
+  }
+
+  .share-card-question {
+    color: hsl(var(--share-card-fg));
+  }
+
+  .share-card-quote {
+    border-left: 2px solid hsl(var(--share-accent) / 0.75);
+  }
+
+  .share-card-answer {
+    color: hsl(var(--share-card-fg) / 0.9);
+  }
+}
