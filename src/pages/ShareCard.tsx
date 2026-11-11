@@ -68,6 +68,31 @@ const COPY: Record<string, Record<string, string>> = {
   },
 };
 
+type FormatKey = "post" | "portrait" | "story";
+const FORMATS: Record<FormatKey, { w: number; h: number; es: string; en: string }> = {
+  post: { w: 540, h: 540, es: "Post cuadrado 1:1", en: "Square post 1:1" },
+  portrait: { w: 540, h: 675, es: "Post vertical 4:5", en: "Portrait post 4:5" },
+  story: { w: 540, h: 960, es: "Historia / TikTok 9:16", en: "Story / TikTok 9:16" },
+};
+
+const FormatFrame = ({
+  format,
+  children,
+  innerRef,
+}: {
+  format: FormatKey;
+  children: React.ReactNode;
+  innerRef?: (node: HTMLDivElement | null) => void;
+}) => (
+  <div
+    ref={innerRef}
+    style={{ width: FORMATS[format].w, height: FORMATS[format].h }}
+    className="flex items-center justify-center overflow-hidden bg-background p-8"
+  >
+    <div className="w-full">{children}</div>
+  </div>
+);
+
 const CardView = ({
   data,
   label,
@@ -120,6 +145,8 @@ const ShareCard = () => {
   const [exporting, setExporting] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteCard[]>([]);
   const [saved, setSaved] = useState(false);
+  const [format, setFormat] = useState<FormatKey>("story");
+  const exportRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setFavorites(loadFavorites());
@@ -148,8 +175,8 @@ const ShareCard = () => {
   }, [params]);
 
   const render = async () => {
-    if (!cardRef.current) return null;
-    return toPng(cardRef.current, { cacheBust: true, pixelRatio: 2 });
+    if (!exportRef.current) return null;
+    return toPng(exportRef.current, { cacheBust: true, pixelRatio: 2 });
   };
 
   const download = async () => {
@@ -159,7 +186,7 @@ const ShareCard = () => {
       if (!url) return;
       const a = document.createElement("a");
       a.href = url;
-      a.download = "salida-de-la-caverna.png";
+      a.download = `salida-de-la-caverna-${format}.png`;
       a.click();
     } finally {
       setBusy(false);
@@ -246,7 +273,7 @@ const ShareCard = () => {
         if (!url) continue;
         const a = document.createElement("a");
         a.href = url;
-        a.download = `salida-de-la-caverna-${fav.id}.png`;
+        a.download = `salida-de-la-caverna-${format}-${fav.id}.png`;
         a.click();
         await new Promise((r) => setTimeout(r, 300));
       }
@@ -318,6 +345,24 @@ const ShareCard = () => {
                   cardRef.current = node;
                 }}
               />
+            </div>
+
+            <div className="mt-6">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {lang === "es" ? "Formato de descarga" : "Download format"}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {(Object.keys(FORMATS) as FormatKey[]).map((k) => (
+                  <Button
+                    key={k}
+                    size="sm"
+                    variant={format === k ? "default" : "outline"}
+                    onClick={() => setFormat(k)}
+                  >
+                    {lang === "es" ? FORMATS[k].es : FORMATS[k].en}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -421,18 +466,24 @@ const ShareCard = () => {
         {/* Renderizado oculto de las favoritas para exportarlas como imagen/PDF */}
         <div
           aria-hidden
-          className="pointer-events-none fixed -left-[10000px] top-0 w-[640px]"
+          className="pointer-events-none fixed -left-[10000px] top-0"
         >
+          {data && (
+            <FormatFrame format={format} innerRef={(n) => { exportRef.current = n; }}>
+              <CardView data={data} label={copy.label} />
+            </FormatFrame>
+          )}
           {favorites.map((fav) => (
-            <CardView
+            <FormatFrame
               key={fav.id}
-              data={{ question: fav.question, answer: fav.answer }}
-              label={copy.label}
+              format={format}
               innerRef={(node) => {
                 if (node) offscreenRefs.current.set(fav.id, node);
                 else offscreenRefs.current.delete(fav.id);
               }}
-            />
+            >
+              <CardView data={{ question: fav.question, answer: fav.answer }} label={copy.label} />
+            </FormatFrame>
           ))}
         </div>
       </div>
